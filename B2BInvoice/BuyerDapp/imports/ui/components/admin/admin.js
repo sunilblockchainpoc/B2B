@@ -28,7 +28,7 @@ Template['components_admin'].events({
 	template.find("#createPObtn").disabled=true;
 	
 		TemplateVar.set(template,'state', {isMining: true});
-		Meteor.call('createVendorRFQContract',function(error, result){
+		Meteor.call('createPurchaseOrderContract',function(error, result){
 		if (!error) 
 		{
 			template.find("#createPObtn").disabled=false;
@@ -91,7 +91,7 @@ Template['components_admin'].events({
 	template.find("#createShipmentbtn").disabled=true;
 	
 		TemplateVar.set(template,'state', {isMining: true});
-		Meteor.call('createWorkOrderContract',function(error, result){
+		Meteor.call('createShipmentContract',function(error, result){
 		if (!error) 
 		{
 			template.find("#createShipmentbtn").disabled=false;

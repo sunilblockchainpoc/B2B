@@ -1,0 +1,55 @@
+    <template name="components_billitnow_wo_dashboard">
+    <div class="panel panel-default panel-dapp">
+        <div class="panel-heading">
+            BillitNow Dashboard
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <td>Work Order Number</td>
+                                    <td>Work Order Status</td>
+                                    <td>PO Number</td>
+                                    <td>Munich RE Invoice</td>
+                                    <td>Munich RE Invoice File</td>
+                                    <td>BillitNow Invoice</td>
+                                    <td>BillitNow Invoice File</td>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {{#with TemplateVar.get 'state'}}
+                            {{#if list}}
+                            {{#each getInvoiceWO}}
+                            <tr>
+                                <td><a href ="" id={{wo_number}} class="wolink">{{wo_number}}</a></td>
+                                    <td>{{wo_status}}</td>
+                                    <td>{{po_number}}</td>
+                                    <td>{{invoice_Number}}</td>
+                                    <td>
+                                        <a href =""  id={{invoiceURL}} class="invfilelink">
+                                                    {{invoice_fileName}}
+                                        </a>
+                                        </td>
+                                        <td>{{billitNowInvoice}}</td>
+                                        <td>
+                                        <a href =""  id={{billitNowURL}} class="billfilelink">
+                                                    {{billitNowInvFile}}
+                                        </a>
+                                        </td>
+                                        
+                                </tr>
+                            {{/each}}
+                            {{/if}}
+                            {{/with}}
+                           </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

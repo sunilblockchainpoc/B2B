@@ -1,0 +1,56 @@
+<template name="login">
+        <style>
+                body{
+                background-color:white
+                }
+                </style>
+        <div class="row-fluid">
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="panel panel-default panel-dapp">
+                    <div class="panel-heading">
+                        Login
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                {{#with TemplateVar.get 'login'}}
+                                {{#if isError}}
+                                    <div class="alert alert-warning">
+                                        Invalid username / password. Please try again.
+                                    </div>
+                                {{/if}}
+                                {{/with}}
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <label for="username" class="col-sm-4 control-label">User Name</label>
+                                        <div class="col-sm-6">
+                                            <input type="text" id="username" class="form-control" value="" placeholder="User Name" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password" class="col-sm-4 control-label">Password</label>
+                                        <div class="col-sm-6">
+                                            <input type="password" id="password" class="form-control" value="" placeholder="Password" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-5">
+                                            <button type="button" id="loginbtn" style="position: relative;top: 10px;left: 80%;" class="btn btn-sm bg-all"> Login
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</template>
+

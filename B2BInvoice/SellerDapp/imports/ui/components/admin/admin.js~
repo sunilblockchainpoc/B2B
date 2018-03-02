@@ -1,0 +1,40 @@
+import './admin.html'
+import { Meteor } from 'meteor/meteor';
+
+Template['components_admin'].onRendered(function(){
+    TemplateVar.set('state', {isInactive: true});
+});
+
+
+Template['components_admin'].events({
+
+	"click #createKYCRegbtn": function(event, template){ 
+
+	TemplateVar.set(template,'state', {isMining: true});
+	Meteor.call('createKYC',{url:'http://localhost:7000/Admin/KYC'},function(error, result){
+	if (result) 
+	{
+		console.log(result);
+		//TemplateVar.set('state', {isMined: true,address: JSON.parse(result).KYRegistry});
+		return TemplateVar.set(template,'state',{isMined: true, address: result});
+	}
+});
+
+}});
+
+/*Meteor.methods({
+
+	"createKYC": function(url,options){ 
+	
+	Meteor.http.call('POST', 'http://localhost:7000/Admin/KYC', 
+	{
+	}, (error, result) => {
+	if (!error) 
+	{
+		return result;
+		//TemplateVar.set('state', {isMined: true, address:JSON.parse(result.KYRegistry)});
+	  	
+	}
+
+})
+}});*/

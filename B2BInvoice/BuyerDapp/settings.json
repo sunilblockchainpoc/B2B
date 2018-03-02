@@ -1,0 +1,15 @@
+{
+  "server": {
+    "RolesRepositoryContractAddress":"0x0a8c5b095e742dad3948bf0461ef3931140c47a0",
+    "UserRepositoryContractAddress":"0xaabc6abbf3bfc5327147edf8db258139a4338f51",
+    "RFQContractAddress":"0xb626bf8e5d3afe8795d7925d5e24ff5548c87b51",
+    "POContractAddress":"0x1eb6cb0757bd48c3076f6813353423b9c3412a26",
+    "ShipmentContractAddress":"0x4f4d09bb91de3aaf93d6c252e85a98fcf719fe64",
+    "tempPath": "/home/blockchain/temp/",
+    "uploadURL":"http://localhost:9000/upload",
+    "downloadURL":"http://localhost:9000/download",
+    "generateURL":"http://localhost:9000/generate",
+    "converttopdf":"http://localhost:9000/converttopdf",
+    "web3api":"http://localhost:8001"
+  }
+}

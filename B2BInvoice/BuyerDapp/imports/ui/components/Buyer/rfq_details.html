@@ -1,0 +1,107 @@
+<template name="components_rfq_details">
+    <div class="panel panel-default panel-dapp">
+        <div class="panel-heading">
+            RFQ Details
+        </div>
+        <div class="panel-body">
+ 
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal">
+                   {{#with TemplateVar.get 'rfqData'}} 
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">RFQ Number:</label>
+                            <div class="col-sm-6">{{rfqName}}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Requested By:</label>
+                            <div class="col-sm-8">
+                                {{rfqDescription}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                                <label class="col-sm-4 control-label">Requested On:</label>
+                                <div class="col-sm-6">{{rfqStatus}}</div>
+                        </div>
+                        <div class="form-group">
+                                <label class="col-sm-4 control-label">Responded By:</label>
+                                <div class="col-sm-6">{{requestBy}}</div>
+                        </div>
+                            
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Responded Date:</label>
+                            <div class="col-sm-6">
+                                    {{requestDt}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                                <label class="col-sm-4 control-label">RFQ Amount:</label>
+                                <div class="col-sm-6">{{responseBy}}</div>
+                        </div>
+                            
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Response Detail:</label>
+                            <div class="col-sm-6">{{responseDt}}</div>
+                        </div>
+
+                        {{/with}} 
+
+                        <div class=" col-sm-9 table-responsive">
+                            <table class="table table-bordered">
+                                    <thead>
+                                         <tr>
+              <th></th>
+                                             <th>Product Details</th>
+                                             <th>Quantity</th>
+                                         </tr>
+                                     </thead>
+      <tbody>
+                                     <tr>
+     
+                                 <td><input   type="checkbox" value="" id="pilot1"  ></td>
+                                 <td>Aashirvaad</td>
+                                 <td ><input type="text" class="form-control" id="NoVpilot1" value="" disabled/></td>
+                                     </tr>
+                                     <tr>
+     
+                                 <td><input   type="checkbox" value="" id="pilot2"  ></td>
+                                 <td>Bingo</td>
+                                 <td ><input type="text" class="form-control" id="NoVpilot2" value="" disabled/></td>
+                                 </tr>
+     
+                             <tr>
+                             <td><input   type="checkbox" value="" id="pilot3"  ></td>
+                                 <td>Classmate</td>
+                                 <td class="col-3"><input type="text" class="form-control" id="NoVpilot3" value="" disabled/></td>
+                             </tr>
+     
+     
+                             <tr>
+                             <td><input   type="checkbox" value="" id="OBMCT"  ></td>
+                                 <td>B Natural</td>
+                                 <td class="col-3"><input type="text" class="form-control" id="NoVOBMCT" value="" disabled/></td>
+                             </tr>
+                                     </tbody>
+     
+                                     </table>
+                    </div>                        
+
+                        {{#with TemplateVar.get 'readonly'}}
+                        {{#if show}}
+                        <div class="form-group">
+                                <div class="col-sm-5">
+                                    <button type="button" id="updateRFQStatus" style="position: relative;top: 10px;left: 72%;" class="btn btn-sm bg-all"> Update
+                                    </button>
+                                </div>
+                        </div>
+                        {{/if}}
+                        {{/with}}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+

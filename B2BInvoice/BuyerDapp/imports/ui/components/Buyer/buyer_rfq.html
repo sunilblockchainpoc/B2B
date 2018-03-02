@@ -1,0 +1,89 @@
+<template name="components_buyer_rfq">
+    <div class="panel panel-default panel-dapp">
+        <div class="panel-heading">
+            Request For Quote
+        </div>
+        <div class="panel-body">
+             {{#with TemplateVar.get 'state'}}
+                {{#if isError}}
+                    <div class="alert alert-warning">
+                        Error requesting for quote.The error was: "{{error}}".
+                    </div>
+                {{/if}}
+            
+                {{#if isMining}}
+                    <div class="alert alert-info">
+                        Request for Quote is being processed...
+                        <span class="badge text-right">
+                            <i class="fa fa-cog fa-spin"></i>
+                        </span>
+                    </div>
+                {{/if}}
+            
+                {{#if isMined}}
+                    <div class="alert alert-info">
+                        Quote {{rfqName}} has been successfully requested!!
+                    </div>
+                    <hr />
+                    <br />
+            	{{/if}}
+
+            {{/with}} 
+
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal">
+                    </form>
+                    
+                    <div class=" col-sm-9 table-responsive">
+                            <table class="table table-bordered">
+                                    <thead>
+                                         <tr>
+              <th></th>
+                                             <th>Product Details</th>
+                                             <th>Quantity</th>
+                                         </tr>
+                                     </thead>
+      <tbody>
+                                     <tr>
+     
+                                 <td><input   type="checkbox" value="" id="pilot1"  ></td>
+                                 <td>Aashirvaad</td>
+                                 <td ><input type="text" class="form-control" id="NoVpilot1" value="" disabled/></td>
+                                     </tr>
+                                     <tr>
+     
+                                 <td><input   type="checkbox" value="" id="pilot2"  ></td>
+                                 <td>Bingo</td>
+                                 <td ><input type="text" class="form-control" id="NoVpilot2" value="" disabled/></td>
+                                 </tr>
+     
+                             <tr>
+                             <td><input   type="checkbox" value="" id="pilot3"  ></td>
+                                 <td>Classmate</td>
+                                 <td class="col-3"><input type="text" class="form-control" id="NoVpilot3" value="" disabled/></td>
+                             </tr>
+     
+     
+                             <tr>
+                             <td><input   type="checkbox" value="" id="OBMCT"  ></td>
+                                 <td>B Natural</td>
+                                 <td class="col-3"><input type="text" class="form-control" id="NoVOBMCT" value="" disabled/></td>
+                             </tr>
+                                     </tbody>
+     
+                                     </table>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-5">
+                            <button type="button" id="submitRequestRFQ" style="position: relative;top: 10px;left: 72%;" class="btn btn-sm bg-all"> Request For Quote
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,49 @@
+<template name="components_buyer_dashboard">
+    <div class="panel panel-default panel-dapp">
+        <div class="panel-heading">
+            RFQ Details
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <td>RFQ Number</td>
+                                    <td>PO Number</td>
+                                    <td>Invoice Number</td>
+                                    <td>Shipment Details</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {{#with TemplateVar.get 'state'}}
+                            {{#if list}}
+                            {{#each getRFQList}}
+                            <tr>
+                               <td><a href="{{pathFor 'App.rfq.details' rfq=(id)}}" id={{id}} class="namelink">{{id}}</a></td>
+                               <td>{{id}}</td>
+                                    <td>
+                                    <a href =""  id={{reqURL}} class="reqfilelink">
+                                        {{reqFileName}}
+                                     </a>
+                                    </td>
+                                    <td>
+                                        <a href="" id={{resURL}} class="resfilelink">
+                                            {{resFileName}}
+                                         </a>
+                                        </td>
+                                    <td>{{rfqValue}}</td>
+                            </tr>
+                            {{/each}}
+                            {{/if}}
+                            {{/with}}
+                           </tbody>
+                        </table>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

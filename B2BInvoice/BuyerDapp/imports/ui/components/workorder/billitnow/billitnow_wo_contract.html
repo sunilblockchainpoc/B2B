@@ -1,0 +1,71 @@
+<template name="components_billitnow_wo">
+    <div class="panel panel-default panel-dapp">
+	<div class="panel-heading">
+		Make Payment
+	</div>
+      <div class="panel-body">
+            {{#with TemplateVar.get 'state'}}
+                {{#if isError}}
+                    <div class="alert alert-warning">
+                        Payment failed.
+                    </div>
+                {{/if}}
+                
+                {{#if isMining}}
+                    <div class="alert alert-info">
+                       Payment in Progress...
+                        <span class="badge text-right">
+                            <i class="fa fa-cog fa-spin"></i>
+                        </span>
+                    </div>
+                {{/if}}
+            
+                {{#if isMined}}
+                    <div class="alert alert-info">
+                        Payment Completed
+                    </div>
+                {{/if}}
+
+            {{/with}} 
+
+	<div class="row">
+        <div class="col-md-8">
+            <form class="form-horizontal">
+
+
+        <div class="form-group">
+            <label for="account_address" class="col-sm-4 control-label">Account Number</label>
+            <div class="col-sm-4">
+                <input type="text" id="account_address" class="form-control" value=""  />
+            </div>
+        </div> 
+
+        <div class="form-group">
+            <label for="amount" class="col-sm-4 control-label">Amount</label>
+            <div class="col-sm-4">
+                <input type="text" id="amount" class="form-control" value="" placeholder="Enter in ethers"  /> 
+            </div>
+        </div> 
+
+		<div class="form-group">
+			<div class="col-sm-5">
+    				<button type="button" id="btnSubmitContract" style="position: relative;top: 10px;left: 72%;" class="btn btn-sm bg-all">Submit
+			</button>
+    			</div>
+			
+            </div>
+            <div class="form-group">
+                    <div class="col-sm-5">
+                            <br/>
+                        </div>
+                    
+                    </div>
+          
+            <br/>
+            
+	</form>
+	</div>
+	</div>
+    </div>
+    </div>
+</template>

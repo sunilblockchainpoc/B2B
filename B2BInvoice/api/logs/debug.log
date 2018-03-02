@@ -1,0 +1,163 @@
+Error: spawn unoconv ENOENT
+    at _errnoException (util.js:1003:13)
+    at Process.ChildProcess._handle.onexit (internal/child_process.js:201:19)
+    at onErrorNT (internal/child_process.js:389:16)
+    at process._tickCallback (internal/process/next_tick.js:152:19)
+    at Function.Module.runMain (module.js:703:11)
+    at startup (bootstrap_node.js:190:16)
+    at bootstrap_node.js:662:3
+Error logged and moving on
+Node server started!
+Upload file error to IPFS:Error: connect ECONNREFUSED 127.0.0.1:5001Error: connect ECONNREFUSED 127.0.0.1:5001
+    at Object._errnoException (util.js:1003:13)
+    at _exceptionWithHostPort (util.js:1024:20)
+    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1195:14)
+successfully uploaded the file to IPFS
+TypeError: Cannot read property '0' of undefined
+    at ipfs.util.addFromFs (/home/ethereum-admin/go/B2BInvoice/api/index.js:92:31)
+    at send (/home/ethereum-admin/go/B2BInvoice/api/node_modules/ipfs-api/src/request-api.js:164:16)
+    at f (/home/ethereum-admin/go/B2BInvoice/api/node_modules/once/once.js:25:25)
+    at ClientRequest.req.on (/home/ethereum-admin/go/B2BInvoice/api/node_modules/ipfs-api/src/request-api.js:124:5)
+    at ClientRequest.emit (events.js:165:20)
+    at Socket.socketErrorListener (_http_client.js:389:9)
+    at Socket.emit (events.js:160:13)
+    at emitErrorNT (internal/streams/destroy.js:64:8)
+    at process._tickCallback (internal/process/next_tick.js:152:19)
+Error logged and moving on
+Error: spawn unoconv ENOENT
+    at _errnoException (util.js:1003:13)
+    at Process.ChildProcess._handle.onexit (internal/child_process.js:201:19)
+    at onErrorNT (internal/child_process.js:389:16)
+    at process._tickCallback (internal/process/next_tick.js:152:19)
+    at Function.Module.runMain (module.js:703:11)
+    at startup (bootstrap_node.js:190:16)
+    at bootstrap_node.js:662:3
+Error logged and moving on
+Node server started!
+Upload file error to IPFS:Error: connect ECONNREFUSED 127.0.0.1:5001Error: connect ECONNREFUSED 127.0.0.1:5001
+    at Object._errnoException (util.js:1003:13)
+    at _exceptionWithHostPort (util.js:1024:20)
+    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1195:14)
+successfully uploaded the file to IPFS
+TypeError: Cannot read property '0' of undefined
+    at ipfs.util.addFromFs (/home/ethereum-admin/go/B2BInvoice/api/index.js:92:31)
+    at send (/home/ethereum-admin/go/B2BInvoice/api/node_modules/ipfs-api/src/request-api.js:164:16)
+    at f (/home/ethereum-admin/go/B2BInvoice/api/node_modules/once/once.js:25:25)
+    at ClientRequest.req.on (/home/ethereum-admin/go/B2BInvoice/api/node_modules/ipfs-api/src/request-api.js:124:5)
+    at ClientRequest.emit (events.js:165:20)
+    at Socket.socketErrorListener (_http_client.js:389:9)
+    at Socket.emit (events.js:160:13)
+    at emitErrorNT (internal/streams/destroy.js:64:8)
+    at process._tickCallback (internal/process/next_tick.js:152:19)
+Error logged and moving on
+Error: spawn unoconv ENOENT
+    at _errnoException (util.js:1003:13)
+    at Process.ChildProcess._handle.onexit (internal/child_process.js:201:19)
+    at onErrorNT (internal/child_process.js:389:16)
+    at process._tickCallback (internal/process/next_tick.js:152:19)
+    at Function.Module.runMain (module.js:703:11)
+    at startup (bootstrap_node.js:190:16)
+    at bootstrap_node.js:662:3
+Error logged and moving on
+Node server started!
+Error: spawn unoconv ENOENT
+    at _errnoException (util.js:1003:13)
+    at Process.ChildProcess._handle.onexit (internal/child_process.js:201:19)
+    at onErrorNT (internal/child_process.js:389:16)
+    at process._tickCallback (internal/process/next_tick.js:152:19)
+    at Function.Module.runMain (module.js:703:11)
+    at startup (bootstrap_node.js:190:16)
+    at bootstrap_node.js:662:3
+Error logged and moving on
+Node server started!
+successfully uploaded the file to IPFS
+QmUByFKZEvzbaLrn46munTyVcCNpGgQyxZcbYjjnp4Fhig
+successfully uploaded the file to IPFS
+QmfHLcbEPuqfStuJRWK8kk4dCcLvkeDNyUDxB8JrKu9PWL
+successfully uploaded the file to IPFS
+QmUWHHAaygrXbLx2kdzu2BCKirhPBq9ooZc6XKdPjaMXbT
+successfully uploaded the file to IPFS
+QmWcahoD9Pc2Az2mygwJ6eSsxCcaoBH62ucP3FvJzfUxaD
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+Node server started!
+successfully uploaded the file to IPFS
+QmZDoAMzeAWc3nGdWgeNqE3HG9Uv7avSVfL7fYDPc9w2Cv
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+QmNsFxUg97gAisTZbNysnvUDFnmHjZb5HnyvQ6GXZmJMFe
+successfully uploaded the file to IPFS
+QmdyZ5azyMnxYVrqbszo2dciNoERkKFVzpHcJTjdfHbCJp
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+QmcJ6kzi7WMJxhqfMT3E9JNGhCET6EauWRUtMzcYxYVRzx
+successfully uploaded the file to IPFS
+QmcJ6kzi7WMJxhqfMT3E9JNGhCET6EauWRUtMzcYxYVRzx
+successfully uploaded the file to IPFS
+QmcJ6kzi7WMJxhqfMT3E9JNGhCET6EauWRUtMzcYxYVRzx
+successfully uploaded the file to IPFS
+QmcJ6kzi7WMJxhqfMT3E9JNGhCET6EauWRUtMzcYxYVRzx
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+QmSHeB8Wqz9ACwd44At3qSGdXFxAQ8DfQKsnE7EVVKvPLb
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+QmdpTkWLbagZYmUcW7De7tgCbZVheH9eBP4ksgpJQC9xkK
+successfully uploaded the file to IPFS
+QmUWHHAaygrXbLx2kdzu2BCKirhPBq9ooZc6XKdPjaMXbT
+successfully uploaded the file to IPFS
+Qmc8zppbkzNYa7Xzae2QM8UsRLS5kayNt5S8ZFoPxzz3v1
+successfully uploaded the file to IPFS
+QmWuqRHod9fSA5MLK3Jz9EVUcvjeT5KytmShk4RYQkmjH6
+successfully uploaded the file to IPFS
+QmRZurbvTbjsCpts8goe1figrSn1dTdurj2Gk6hN6v5cjV
+successfully uploaded the file to IPFS
+QmcJ6kzi7WMJxhqfMT3E9JNGhCET6EauWRUtMzcYxYVRzx
+successfully uploaded the file to IPFS
+QmVdrqfF5X6MxiQNUGXaDad72vJCG3uuwgPFErUiJaNFYh
+successfully uploaded the file to IPFS
+QmeiMw9VeShYNJJYaa4Ns8G8x5bfSyrjCe7hMqUy1zjbpj
+successfully uploaded the file to IPFS
+QmNuizRaF3oTagpRLBjscr5THZvUB7oG9bREVw7ALuZEP7
+successfully uploaded the file to IPFS
+QmNsFxUg97gAisTZbNysnvUDFnmHjZb5HnyvQ6GXZmJMFe
+successfully uploaded the file to IPFS
+QmbWp22XeBsbs7gS8z6a5acgwxqBDXe3m6tunGmbCB8Aox
+successfully uploaded the file to IPFS
+QmQ6UbAaBCi3iA4geLXh69Eoix2SMaQutkMfnH9qexfadr
+Node server started!
+Node server started!
+successfully uploaded the file to IPFS
+QmfCyHqCWxirqmEtXWGKRuNepa4kcVgdpMjXKj7S1BCp5L
+Node server started!
+successfully uploaded the file to IPFS
+QmNy7xiMSs3i4XEHKsQqKc3QEgGoGyjje4CjHAWG7hjQfD
+Node server started!

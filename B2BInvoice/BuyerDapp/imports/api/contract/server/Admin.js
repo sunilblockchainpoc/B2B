@@ -36,6 +36,9 @@ const ShipmentContractByteCode = "0x" + require('../../../startup/server/Contrac
 var rolesRepositorytransactionObject = {from: web3.eth.accounts[0],data: rolesRepositoryContractByteCode,gas:const_gas};
 var userRepositoryTransactionObject =  {from: web3.eth.accounts[0],data: userRepositoryContractByteCode,gas:const_gas};
 var rolesRepositoryContractAddr = Meteor.settings.server.RolesRepositoryContractAddress;
+var userRepositoryContractAddr = Meteor.settings.server.UserRepositoryContractAddress;
+
+var userRepositoryContractInstance = web3.eth.contract(JSON.parse(userRepositoryContractABI)).at(userRepositoryContractAddr); 
 
 Meteor.methods({
   

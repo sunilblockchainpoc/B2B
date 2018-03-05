@@ -1,0 +1,113 @@
+<template name="components_admin_createuser">
+    <div class="panel panel-default panel-dapp">
+        <div class="panel-heading">
+            Create User
+        </div>
+        <div class="panel-body">
+             {{#with TemplateVar.get 'state'}}
+                {{#if isError}}
+                    <div class="alert alert-warning">
+                        Error creating user. Please try again.
+                    </div>
+                {{/if}}
+            
+                {{#if isMining}}
+                    <div class="alert alert-info">
+                      User Creation In Progress....
+                        <span class="badge text-right">
+                            <i class="fa fa-cog fa-spin"></i>
+                        </span>
+                    </div>
+                {{/if}}
+            
+                {{#if isMined}}
+                    <div class="alert alert-info">
+                        User has been created successfully!.
+                    </div>
+                    <hr />
+                    <br />
+            	{{/if}}
+
+            {{/with}} 
+
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                                <label for="firstName" class="col-sm-4 control-label">First Name</label>
+                                <div class="col-sm-6">
+                                    <input type="text" id="firstName" class="form-control" value="" placeholder="First Name" />
+                                </div>
+                            </div>
+
+                        <div class="form-group">
+                            <label for="lastName" class="col-sm-4 control-label">Last Name</label>
+                            <div class="col-sm-6">
+                                <input type="text" id="lastName" class="form-control" value="" placeholder="Last Name" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                                <label for="orgName" class="col-sm-4 control-label">Organization</label>
+                                <div class="col-sm-6">
+                                    <input type="text" id="orgName" class="form-control" value="" placeholder="Organization" />
+                                </div>
+                            </div>
+
+                        <div class="form-group">
+                            <label for="userName" class="col-sm-4 control-label">User Name</label>
+                            <div class="col-sm-6">
+                                <input type="text" id="userName" class="form-control" value="" placeholder="User Name" />
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password" class="col-sm-4 control-label">Password</label>
+                            <div class="col-sm-6">
+                                <input type="password" id="password" class="form-control" value="" placeholder="Password" />
+                            </div>
+                        </div>
+
+                       <!-- <div class="form-group">
+                            <label for="group" class="col-sm-4 control-label">Group</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" id="group"> 
+                                    {{#each getGroups}}
+                                        <option value={{id}}>{{Group}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="role" class="col-sm-4 control-label">Role</label>
+                            <div class="col-sm-3">
+                                <select class="form-control" id="role"> 
+                                    {{#each getRoles}}
+                                        <option value={{id}}>{{Role}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>-->
+
+                        <div class="form-group">
+                                <label for="address" class="col-sm-4 control-label">Ethereum Address</label>
+                                <div class="col-sm-6">
+                                    <input type="text" id="address" class="form-control" value="" placeholder="Ethereum Address" />
+                                </div>
+                            </div>
+                        
+                        <div class="form-group">
+                            <div class="col-sm-5">
+                                <button type="button" id="createUserbtn" style="position: relative;top: 10px;left: 72%;" class="btn btn-sm bg-all"> Create User
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

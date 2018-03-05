@@ -11,40 +11,49 @@
                    {{#with TemplateVar.get 'rfqData'}} 
                         <div class="form-group">
                             <label class="col-sm-4 control-label">RFQ Number:</label>
-                            <div class="col-sm-6">{{rfqName}}</div>
+                            <div class="col-sm-6">{{rfqID}}</div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-4 control-label">Requested By:</label>
-                            <div class="col-sm-8">
-                                {{rfqDescription}}
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                                <label class="col-sm-4 control-label">Requested On:</label>
-                                <div class="col-sm-6">{{rfqStatus}}</div>
+                                <label class="col-sm-4 control-label">Requested Date:</label>
+                                <div class="col-sm-6">{{requestDate}}</div>
                         </div>
                         <div class="form-group">
                                 <label class="col-sm-4 control-label">Responded By:</label>
-                                <div class="col-sm-6">{{requestBy}}</div>
+                                <div class="col-sm-6">{{responseBy}}</div>
                         </div>
                             
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Responded Date:</label>
                             <div class="col-sm-6">
-                                    {{requestDt}}
+                                    {{responseDt}}
                             </div>
                         </div>
                         <div class="form-group">
                                 <label class="col-sm-4 control-label">RFQ Amount:</label>
-                                <div class="col-sm-6">{{responseBy}}</div>
+                                <div class="col-sm-6">{{rfqValue}}</div>
                         </div>
                             
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Response Detail:</label>
                             <div class="col-sm-6">{{responseDt}}</div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Update Status</label>
+                            <div class="col-sm-6">
+                            <input type="radio" name="rfqStatus" id="rfqStatus2" value="2"> Accept
+                            <input type="radio" name="rfqStatus" id="rfqStatus3" value="3"> Decline
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-5">
+                                <button type="button" id="updateRFQStatus" style="position: relative;top: 10px;left: 72%;" class="btn btn-sm bg-all"> Update
+                                </button>
+                            </div>
+                    </div>                        
+
 
                         {{/with}} 
 
@@ -60,44 +69,35 @@
       <tbody>
                                      <tr>
      
-                                 <td><input   type="checkbox" value="" id="pilot1"  ></td>
+                                 <td><input   type="checkbox" value="" id="aashirvaad"  ></td>
                                  <td>Aashirvaad</td>
-                                 <td ><input type="text" class="form-control" id="NoVpilot1" value="" disabled/></td>
+                                 <td ><input type="text" class="form-control" id="aashirvaad_value" value="" disabled/></td>
                                      </tr>
                                      <tr>
      
-                                 <td><input   type="checkbox" value="" id="pilot2"  ></td>
+                                 <td><input   type="checkbox" value="" id="bingo"  ></td>
                                  <td>Bingo</td>
-                                 <td ><input type="text" class="form-control" id="NoVpilot2" value="" disabled/></td>
+                                 <td ><input type="text" class="form-control" id="bingo_value" value="" disabled/></td>
                                  </tr>
      
                              <tr>
-                             <td><input   type="checkbox" value="" id="pilot3"  ></td>
+                             <td><input   type="checkbox" value="" id="classmate"  ></td>
                                  <td>Classmate</td>
-                                 <td class="col-3"><input type="text" class="form-control" id="NoVpilot3" value="" disabled/></td>
+                                 <td class="col-3"><input type="text" class="form-control" id="classmate_value" value="" disabled/></td>
                              </tr>
      
      
                              <tr>
-                             <td><input   type="checkbox" value="" id="OBMCT"  ></td>
+                             <td><input   type="checkbox" value="" id="bnatural"  ></td>
                                  <td>B Natural</td>
-                                 <td class="col-3"><input type="text" class="form-control" id="NoVOBMCT" value="" disabled/></td>
+                                 <td class="col-3"><input type="text" class="form-control" id="bnatural_value" value="" disabled/></td>
                              </tr>
                                      </tbody>
      
                                      </table>
                     </div>                        
 
-                        {{#with TemplateVar.get 'readonly'}}
-                        {{#if show}}
-                        <div class="form-group">
-                                <div class="col-sm-5">
-                                    <button type="button" id="updateRFQStatus" style="position: relative;top: 10px;left: 72%;" class="btn btn-sm bg-all"> Update
-                                    </button>
-                                </div>
-                        </div>
-                        {{/if}}
-                        {{/with}}
+
                     </form>
                 </div>
             </div>

@@ -21,8 +21,8 @@
                             {{#if list}}
                             {{#each getRFQList}}
                             <tr>
-                               <td><a href="{{pathFor 'App.rfq.details' rfq=(id)}}" id={{id}} class="namelink">{{id}}</a></td>
-                               <td>{{id}}</td>
+                               <td><a href="{{pathFor 'App.rfq.details' rfq=(rfqID)}}" id={{rfqID}} class="namelink">{{rfqID}}</a></td>
+                               <td>{{poNumber}}</td>
                                     <td>
                                     <a href =""  id={{reqURL}} class="reqfilelink">
                                         {{reqFileName}}

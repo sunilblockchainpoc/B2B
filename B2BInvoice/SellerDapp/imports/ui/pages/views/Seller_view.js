@@ -10,12 +10,11 @@ The view1 template
 @class [template] views_view1
 @constructor
 */
-import './Admin_view.html';
-import '../../components/admin/admin.js';
-import '../../components/admin/admin_changepassword.js';
-import '../../components/admin/admin_createuser.js';
+import './Seller_view.html';
+import '../../components/Seller/seller_dashboard.js';
+import '../../components/Seller/seller_rfq.js';
 
-Template['Admin_view'].helpers({
+Template['Seller_view'].helpers({
     /**
     Get the name
 
@@ -28,6 +27,6 @@ Template['Admin_view'].helpers({
 });
 
 // When the template is created
-Template['Admin_view'].onCreated(function(){
+Template['Seller_view'].onCreated(function(){
 	//Meta.setSuffix(TAPi18n.__("dapp.view1.title"));
 });

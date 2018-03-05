@@ -2,28 +2,19 @@ import './buyer_rfq.html'
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session'
 
-const XLSX = require("xlsx");
 var sheetInfo = new ReactiveArray(); 
 
 Template['components_buyer_rfq'].onRendered(function(){
-	Session.setDefault('username','ramamosr');
+	Session.setDefault('username',BuyerUserName);
     TemplateVar.set('state', {isInactive: true});
 });
-
-Template['components_buyer_rfq'].helpers({
-	
-		"getSheetInfo": function()
-		{
-			return sheetInfo.list();
-		}
-	});
-
 
 Template['components_buyer_rfq'].events({
 	
 	"click input[type=checkbox]":function (event,template){
 		var id = event.currentTarget.id;
-		var textId = "#NoV" + id;
+		var textId = "#"+id + "_value";
+
 		if(event.currentTarget['checked']){
 				template.find(textId).disabled = false;
 			}
@@ -38,21 +29,30 @@ Template['components_buyer_rfq'].events({
 		template.find("#submitRequestRFQ").disabled=true;
 		var username = Session.get("BuyerUserName");
 		var address = Session.get("BuyerUserAddress");
-		var selectedServices = template.findAll( "input[type=checkbox]:checked");
+		var productDetails = template.findAll( "input[type=checkbox]:checked");
 		var textId,textValue;
 		var jsonObj = [];
-		for(var i=0; i<selectedServices.length;i++){
-			textId = "#NoV" + selectedServices[i].id;
-			textValue = template.find(textId).value;
+
+		console.log(productDetails);
+
+		for(var i=0; i<productDetails.length;i++){
+
+			// Get each of the product name
+			var textId = "#"+ productDetails[i].id + "_value";
+			var textValue = template.find(textId).value;
+
 			var jsonData={};
-			jsonData["id"] = "#" + selectedServices[i].id;
+
+			jsonData["id"] =  "#" + productDetails[i].id;
 			jsonData["textid"] = textId;
-			jsonData["NoV"] = textValue;
+			jsonData["textvalue"] = textValue;
+
+			console.log(jsonData);
 			jsonObj.push(jsonData);
 		}
 
 		TemplateVar.set(template,'state', {isMining: true});
-		var data = {username: username,ServiceData:jsonObj, nodeAddress:address};
+		var data = {username: username,ProductData:jsonObj, nodeAddress:address};
 						
 			Meteor.call('requestRFQ',data,function(error,result){
 				if (!error) 

@@ -51,16 +51,14 @@ Meteor.methods({
 
   // This method is used by different participants to login to the APP
   "login": function(params){
-   
-   console.log("Login method invoked")
-   var loginresult = userRepositoryContractInstance.login.call(params.username,params.password);
+    var loginresult = userRepositoryContractInstance.login.call(params.username,params.password);
    var finalresult={};
    var groups = []
    var roles = [];
-   console.log("loginresult[0]"+loginresult[0]);
 
    if (loginresult[0]=="0x0000000000000000000000000000000000000000")
    loginresult[0] ="0x";
+   
    if(loginresult[0].length > 2){
      for (var i = 0; i < loginresult[1].length;i++){
        if(parseInt(loginresult[1][i]) >0)
@@ -77,26 +75,45 @@ Meteor.methods({
    return finalresult;
  },
 
-  // Contract Definition -     
-  //function requestRFQ(string requestBy, uint requestDt, string reqProductFileHash ) onlyBuyer public {
-  "requestRFQ" :function(params){
-   
-    /* Upload Product details file into IPFS */
+
+  // This method is used by seller to respond with RFQ Details
+  /* Contract Definition -     
+     function respondToRFQ (uint rfqId, uint rfqValue, string responseBy, 
+     uint responseDt, string resFileName, string resFileHash, string resProductFileHash, RFQStatus status) onlySeller public {
+  */
+
+  "respondRFQ" :function(params){
+       /* Upload Product details file into IPFS */
     var uploadURL = Meteor.settings.server.uploadURL;
     var asyncFunc  = Meteor.wrapAsync( HTTP.post );
-    var jsonFileData = {fileName:params.username+".json", file: new Buffer(JSON.stringify(params.ProductData))};
-    
+    var jsonFileData = {fileName:params.username+".json", file: new Buffer(JSON.stringify(params.ProductDetails))};
+
     var jsonresult =  asyncFunc(uploadURL,{
       headers: {
         'Content-Type': 'application/json'
       },  
       content:JSON.stringify(jsonFileData)
     }); 
-    
+
+    var responseFileName = params.OriginalFileName;
+    var resFileData = {fileName:params.OriginalFileName, file: new Buffer(params.FileData)}
+
+    // Upload the Quote information File into IPFS
+    var uploadResult = asyncFunc(uploadURL,{
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      content:JSON.stringify(resFileData)
+    }); 
+
+    // Response filename and filehash to be added
+    var resFileHash = uploadResult.content;
     // Input Params
-    var requestBy = params.username;
-    var rfqRequestDt = new Date().setHours(0,0,0,0);
-    var reqProductFileHash = jsonresult.content;
+    var rfqID = params.rfqID;
+    var rfqValue = params.rfqAmount;
+    var responseBy = params.ResponseBy;
+    var responseDt = new Date().setHours(0,0,0,0);
+    var resProductFileHash = jsonresult.content;
 
     // Transaction object
     var transactionObject = {
@@ -112,22 +129,41 @@ Meteor.methods({
     });
 
     // Event Handling
-    // event RFQRequested(uint rfqID,string requestBy,bool status);
-    var requestRFQEvent = RFQContractInstance.RFQRequested();
+    // event RFQResponded(uint rfqID,uint respondDate, bool status);
+    var respondRFQEvent = RFQContractInstance.RFQResponded();
     var block = web3.eth.getBlock('latest').number;
     var future = new Future();
 
+    /*   function respondToRFQ (uint rfqId, uint rfqValue, string responseBy, 
+        uint responseDt, string resFileName, string resFileHash, string resProductFileHash, 
+        RFQStatus status) onlySeller public {
+    */
     // Sending Transaction
-    RFQContractInstance.requestRFQ.sendTransaction(
-      requestBy,rfqRequestDt,reqProductFileHash,transactionObject,function(err,result)
+    RFQContractInstance.respondToRFQ.sendTransaction(
+                                                       rfqID,
+                                                       rfqValue,
+                                                       responseBy,
+                                                       responseDt,
+                                                       responseFileName,
+                                                       resFileHash,
+                                                       resProductFileHash,
+                                                       rfqStatusEnum.Responded.value,
+                                                       transactionObject,function(err,result)
     {
       if(err){
         console.log(err);
         future.return(err);
       }
       else{
-          requestRFQEvent.watch(function(error,result){
-          if(result.blockNumber>block && result.args.status && result.args.requestBy == requestBy ){
+        console.log("Event watch started")
+        respondRFQEvent.watch(function(error,result){
+          console.log(result.blockNumber)
+          console.log(block)
+          console.log(result.args.status)
+          console.log(result.args.rfqID)
+          console.log(rfqID)
+
+          if(result.blockNumber>block && result.args.status && result.args.rfqID == rfqID ){
               requestRFQEvent.stopWatching();
               console.log("ID:"+result.args.rfqID);
               future.return(parseInt(result.args.rfqID));
@@ -139,8 +175,8 @@ Meteor.methods({
   },
 
 
- // This method is used to get the relevant details of Buyer Dashboard RFQ No,PO,Invoice Num,Shipment Tracking ID
- "getBuyerDashBoardDetails": function(){ 
+ // This method is used to get the relevant details of Seller Dashboard RFQ No,PO,Invoice Num,Shipment Tracking ID
+ "getSellerDashBoardDetails": function(){ 
   var RFQ;
   var reqURL, resURL;
   var RFQCount = RFQContractInstance.getRFQCount.call();
@@ -153,17 +189,19 @@ Meteor.methods({
         RFQ = RFQContractInstance.getRFQDetail.call(index);
         var rfqID = parseInt(RFQ[0]);
         var poNumber = parseInt(POContractInstance.getPONumberByrfqID(rfqID));
+        var status = rfqStatusEnum.get(parseInt(RFQ[2])).key;
         var Details = POContractInstance.getInvoiceAndPackageByPO(poNumber);
         var invoiceNo = parseInt(Details[0]);
         var packageID = parseInt(Details[1]);
         var shipmentID = parseInt(ShipmentContractInstance.getShipmentIDByPackageID(packageID));
 
-        var data = {rfqID:rfqID,poNumber:poNumber,invoiceNo:invoiceNo,shipmentID:shipmentID};
+        var data = {rfqID:rfqID,status:status,poNumber:poNumber,invoiceNo:invoiceNo,shipmentID:shipmentID};
 
       RFQList.push(data);
     }
   }
   return RFQList;
+ 
 },
 
   // This method captures complete RFQ details for the given RFQ ID
@@ -174,9 +212,9 @@ Meteor.methods({
 
 
   */
-
   "getRFQDetailByrfqID": function(params){ 
 
+  
     var RFQ;
     var reqURL, resURL;
     var RFQCount = RFQContractInstance.getRFQCount.call();
@@ -192,11 +230,11 @@ Meteor.methods({
         resFileHash = RFQ[7];// Seller Responded RFQ FileHash
         resURL = "?name=" +resFileName + "&filehash=" +resFileHash;
 
-        // Seller - Responded Product information services file
-        resProductFileHash = RFQ[9]; 
+        // Requested Product information services file
+        reqProductFileHash = RFQ[8]; 
         
-        if (resProductFileHash.length > 0) {
-            productDetailsJSON = getJSONObject(params.rfqID,resProductFileHash);
+        if (reqProductFileHash.length > 0) {
+            productDetailsJSON = getJSONObject(params.rfqID,reqProductFileHash);
         }
 
         var rfqID = parseInt(RFQ[0]);
@@ -213,6 +251,8 @@ Meteor.methods({
                       resURL:resURL,
                       productDetailsJSON:productDetailsJSON
                    }
+
+       //console.log("productDetailsJSON"+ JSON.stringify(productDetailsJSON))                   
        if (params.rfqID==parseInt(RFQ[0])) {
         RFQDetail = data;
         break;
@@ -312,153 +352,67 @@ Meteor.methods({
     return ShippingList;
   },
 
-  // This method is used to accept or decline the RFQ
-  //function acceptorDeclineQuote(RFQStatus status, uint rfqID) onlyBuyer public {
-  "acceptOrDeclineQuote" :function(params){
+  // This method is used by the Seller to create Invoice and Package Slip
+
+  /* function createInvoice(address shipContractAddress,string packageDescription,
+   uint poNumber,string invoiceReceiptFileName,string invoiceReceiptFileHash,
+   string packageSlipFileName, string packageSlipFileHash ) onlySeller public {
+  */
+    "createInvoiceAndPurchaseSlip":function(params){
    
-    // Input Params
-    var rfqID = params.rfqID;
-    var status = params.status;
+      // Input Params
+      var packageDescription = params.packageDescription;
+      var poNumber = params.poNumber;
 
-    // Transaction object
-    var transactionObject = {
-      data: RFQContractByteCode, 
-      from: params.nodeAddress,
-      gasPrice: web3.eth.gasPrice,
-      gas: const_gas
-    };
+      //TODO
+      var invoiceReceiptFileName = params.invoiceReceiptFileName;
+      var invoiceReceiptFileHash = params.invoiceReceiptFileHash;
+      var packageSlipFileName = params.packageSlipFileName;
+      var packageSlipFileHash = params.packageSlipFileHash;
+ 
+      // Transaction object
+      var transactionObject = {
+        data: RFQContractByteCode, 
+        from: params.nodeAddress,
+        gasPrice: web3.eth.gasPrice,
+        gas: const_gas
+      };
+  
+      web3.eth.estimateGas(transactionObject,function(err,estimateGas){
+        if(!err)
+          transactionObject.gas = estimateGas * 2;
+      });
+  
+      // Event Handling
+      // event InvoiceCreated(uint ponumber,uint invoiceNumber,uint packageID,bool status);
 
-    web3.eth.estimateGas(transactionObject,function(err,estimateGas){
-      if(!err)
-        transactionObject.gas = estimateGas * 2;
-    });
+      var InvoiceCreatedEvent = POContractInstance.InvoiceCreated();
+      var block = web3.eth.getBlock('latest').number;
+      var future = new Future();
+      // Sending Transaction
+      
+      POContractInstance.createInvoice.sendTransaction(
+        ShipmentContractAddr,packageDescription,poNumber,invoiceReceiptFileName,invoiceReceiptFileHash,
+        packageSlipFileName,packageSlipFileHash,transactionObject,function(err,result)
+      {
+        if(err){
+          console.log(err);
+          future.return(err);
+        }
+        else{
+          InvoiceCreatedEvent.watch(function(error,result){
+            if(result.blockNumber>block && result.args.status && result.args.ponumber == poNumber ){
+              PurchaseOrderCreatedEvent.stopWatching();
+                console.log("Invoice Number :"+result.args.invoiceNumber);
+                console.log("Package Number :"+result.args.packageID);
+                future.return(parseInt(result.args.status));
+            }
+          })
+        }
+      });
+      return future.wait();
+    },
 
-    // Event Handling
-    //     event RFQstatusUpdate(uint rfqID,RFQStatus status,bool isSuccess);
-    var RFQstatusUpdateEvent = RFQContractInstance.RFQstatusUpdate();
-    var block = web3.eth.getBlock('latest').number;
-    var future = new Future();
-    // Sending Transaction
-    RFQContractInstance.acceptorDeclineQuote.sendTransaction(
-      status,rfqID,transactionObject,function(err,result)
-    {
-      if(err){
-        console.log(err);
-        future.return(err);
-      }
-      else{
-        RFQstatusUpdateEvent.watch(function(error,result){
-          if(result.blockNumber>block && result.args.isSuccess && result.args.rfqID == rfqID ){
-            RFQstatusUpdateEvent.stopWatching();
-              console.log("RFQ status update :"+result.args.isSuccess);
-              future.return(parseInt(result.args.isSuccess));
-          }
-        })
-      }
-    });
-    return future.wait();
-  }, 
-
-  // This method is used by the Buyer to create Purchase Order
-  // function createPurchaseOrder(uint rfqID,string description,uint poReqDate ) onlyBuyer public {
-  "createPurchaseOrder" :function(params){
-   
-    // Input Params
-    var rfqID = params.rfqID;
-    var description = params.description;
-    var poReqDate = new Date().setHours(0,0,0,0);
-
-
-    // Transaction object
-    var transactionObject = {
-      data: RFQContractByteCode, 
-      from: params.nodeAddress,
-      gasPrice: web3.eth.gasPrice,
-      gas: const_gas
-    };
-
-    web3.eth.estimateGas(transactionObject,function(err,estimateGas){
-      if(!err)
-        transactionObject.gas = estimateGas * 2;
-    });
-
-    // Event Handling
-    // event PurchaseOrderCreated(uint rfqID,uint ponumber,bool status);
-
-
-    var PurchaseOrderCreatedEvent = POContractInstance.PurchaseOrderCreated();
-    var block = web3.eth.getBlock('latest').number;
-    var future = new Future();
-    // Sending Transaction
-    POContractInstance.createPurchaseOrder.sendTransaction(
-      rfqID,description,poReqDate,transactionObject,function(err,result)
-    {
-      if(err){
-        console.log(err);
-        future.return(err);
-      }
-      else{
-        PurchaseOrderCreatedEvent.watch(function(error,result){
-          if(result.blockNumber>block && result.args.isSuccess && result.args.rfqID == rfqID ){
-            PurchaseOrderCreatedEvent.stopWatching();
-              console.log("PO Number :"+result.args.status);
-              future.return(parseInt(result.args.status));
-          }
-        })
-      }
-    });
-    return future.wait();
-  },
-
-  // This method is used by the Buyer to acknowledge the shipment
-  "acknowledgeShippment" :function(params){
-   
-    // Input Params
-    var shipmentID = params.shippingID;
-    var requestBy = params.username;
-    var rfqRequestDt = new Date().setHours(0,0,0,0);
-    var reqProductFileHash = jsonresult.content;
-
-    // Transaction object
-    var transactionObject = {
-      data: RFQContractByteCode, 
-      from: params.nodeAddress,
-      gasPrice: web3.eth.gasPrice,
-      gas: const_gas
-    };
-
-    web3.eth.estimateGas(transactionObject,function(err,estimateGas){
-      if(!err)
-        transactionObject.gas = estimateGas * 2;
-    });
-
-    // Event Handling
-    // event ShipmentStatusUpdate(uint shipmentID, ShipmentStatus status,bool isSuccess);
-
-    var ShipmentStatusEvent = ShipmentContractInstance.ShipmentStatusUpdate();
-    var block = web3.eth.getBlock('latest').number;
-    var future = new Future();
-    ShipmentStatusUpdate
-    // Sending Transaction
-    ShipmentContractInstance.updateShipmentStatus.sendTransaction(
-      shipmentID,shippingStatusEnum.Acknowledged,transactionObject,function(err,result)
-    {
-      if(err){
-        console.log(err);
-        future.return(err);
-      }
-      else{
-        ShipmentStatusEvent.watch(function(error,result){
-          if(result.blockNumber>block && result.args.isSuccess && result.args.shipmentID == shipmentID ){
-              ShipmentStatusEvent.stopWatching();
-              console.log("Shipping status update :"+result.args.isSuccess);
-              future.return(parseInt(result.args.isSuccess));
-          }
-        })
-      }
-    });
-    return future.wait();
-  },
 
 });
 

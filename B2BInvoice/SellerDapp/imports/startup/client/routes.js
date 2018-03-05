@@ -7,15 +7,73 @@ import '../../ui/layouts/body/body.js';
 import '../../ui/layouts/header/header.js';
 import '../../ui/layouts/header/loginheader.js';
 import '../../ui/layouts/footer/footer.js';
-import '../../ui/pages/views/Client_view.js';
-import '../../ui/pages/views/Client_request.js';
-import '../../ui/pages/views/Client_request_update.js';
-import '../../ui/pages/not-found/not-found.js';
+import '../../ui/pages/views/Seller_view.js';
+import '../../ui/pages/views/Admin_view.js';
+import '../../ui/pages/views/RFQ_Details_view.js';
 import '../../ui/pages/views/login.js';
-import '../../ui/pages/workorderviews/client/client_wo.js';
 
 // Set up all routes in the app
 
+FlowRouter.route('/admin', {
+  name: 'App.admin',
+  triggersEnter: [function(context, redirect) {
+  }],
+  action() {
+    BlazeLayout.render('App_body', { top:'header', main: 'Admin_view', footer:'footer' });
+  },
+});
+
+
+FlowRouter.route('/login', {
+  name: 'App.login',
+  triggersEnter: [function(context, redirect) {
+  }],
+  action() {
+    BlazeLayout.render('App_body', { top:'header', main: 'login', footer:'footer' });
+  },
+});
+
+FlowRouter.route('/', {
+  name: 'App.home',
+  triggersEnter: [function(context, redirect) {
+    if(!Session.get("SellerUserName"))
+      redirect('/login');
+  }],
+  action() {
+    BlazeLayout.render('App_body', { top:'header', main: 'Seller_view', footer:'footer' });
+  },
+});
+
+FlowRouter.route('/order', {
+  name: 'App.order',
+  triggersEnter: [function(context, redirect) {
+  }],
+  action() {
+    BlazeLayout.render('App_body', { top:'header', main: 'Seller_view', footer:'footer' });
+  },
+});
+
+FlowRouter.route('/Request/:rfq', {
+  name: 'App.rfq.details',
+  triggersEnter: [function(context, redirect) {
+    if(!Session.get("SellerUserName"))
+      redirect('/login');
+  }],
+  action:function(params,queryParams) {
+    console.log(params)
+      BlazeLayout.render('App_body', { top:'header', main: 'RFQ_Details_view',footer:'footer'});  
+  },
+});
+
+
+FlowRouter.route('/logout', {
+  name: 'App.logout',
+  triggersEnter: [function(context, redirect) {
+    Session.clear();
+    redirect('/login');
+  }]
+});
+/*
 FlowRouter.route('/', {
   name: 'App.home',
   triggersEnter: [function(context, redirect) {
@@ -23,7 +81,7 @@ FlowRouter.route('/', {
       redirect('/login');
   }],
   action() {
-    BlazeLayout.render('App_body', { top:'header', main: 'Client_view', footer:'footer' });
+    BlazeLayout.render('App_body', { top:'header', main: 'Seller_view', footer:'footer' });
   },
 });
 
@@ -58,13 +116,7 @@ FlowRouter.route('/Request/:rfq', {
 });
 
 
-FlowRouter.route('/logout', {
-  name: 'App.logout',
-  triggersEnter: [function(context, redirect) {
-    Session.clear();
-    redirect('/login');
-  }]
-});
+
 
 FlowRouter.route('/client_wo', {
   name: 'App.client.workorder',
@@ -83,6 +135,6 @@ FlowRouter.notFound = {
   },
 };
 
-
+*/
 
   

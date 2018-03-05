@@ -1,15 +1,14 @@
 {
   "server": {
-    "ClientRFQContractAddress":"0xebeb1a0d7c212021d6f27af63f7b677c9fdae7cc",
-    "VendorRFQContractAddress":"0x73da86bb1abcc87b69d3e12a11b3ae390d588306",
-    "RolesRepositoryContractAddress":"0x829cbd0901475be204addf1a167c442ca4b9bc15",
-    "UserRepositoryContractAddress":"0xd4ff44f40f7329c983ae2f4383f10131f48b6417",
-    "WorkOrderContractAddress":"0x4f4d09bb91de3aaf93d6c252e85a98fcf719fe64",
-    "tempPath": "/home/blockchain/temp/",
+    "RolesRepositoryContractAddress":"0x0a8c5b095e742dad3948bf0461ef3931140c47a0",
+    "UserRepositoryContractAddress":"0x559fd346010024524c12045941f916225a35ecef",
+    "RFQContractAddress":"0xbafd1198a11a8d4b5b43c8f77b332cf77e910531",
+    "POContractAddress":"0x1d35d2ac6b2c8f0f21160366319a9a9a041796cd",
+    "ShipmentContractAddress":"0xfd7f591da87108eef08273b67d91fb14caba12ef",
+    "tempPath": "/home/ethereum-admin/go/B2B/B2BInvoice/temp",
     "uploadURL":"http://localhost:9000/upload",
     "downloadURL":"http://localhost:9000/download",
     "generateURL":"http://localhost:9000/generate",
-    "converttopdf":"http://localhost:9000/converttopdf",
-    "web3api":"http://localhost:8545"
+    "web3api":"http://localhost:8001"
   }
 }

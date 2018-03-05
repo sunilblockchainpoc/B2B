@@ -1,6 +1,5 @@
 <template name="header">
 <style>
-    /*
 .navbar-default {
     background-color: #2980b9;
     border-color:#2980b9
@@ -8,54 +7,33 @@
 
 .navbar-default .navbar-brand {
     color: #ffffff;
-} */
-
-
-/*  TODO
-.brand-logo{
-     d-inline-block;
-     align-center;
 }
-Font size of the header
-
-navbar-default
-{
-    color: black !important;
-}
-*/
-
-
-
-
 </style>
- <div class="logo-item">
-    <img src="Commercial Insured.png" style="width:200px;">
-    <div class="logo-text">Munich RE Mobility Services Solution - Commercial Insured</div>
-</div>  
-	<nav class="navbar navbar-default bg-all">
+	<nav class="navbar navbar-default">
 		<div class="container-fluid">
-          
-			<ul class="nav navbar-nav navbar-right nav-ul-col">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/" style="font-weight:800">
+					Blockchain Enabled B2B Invoicing                </a>
+			</div>
 
-				<li>
-                    <a href="{{pathFor 'App.home'}}" class="nav-item">
-                       DASHBOARD
-                    </a>
-                </li>
-				<li>
-                    <a href="{{pathFor 'App.request'}}" class="nav-item">
-                       REQUEST FOR QUOTE
-                    </a>
-                </li>
+			<ul class="nav navbar-nav navbar-right">
+
+
+                    <li>
+                            <a href="{{pathFor 'App.admin'}}" style="color: #ffffff;">
+                               Admin
+                            </a>
+                        </li>   
+
+                    <li>
+                            <a href="{{pathFor 'order'}}" style="color: #ffffff;">
+                               Dashboard
+                            </a>
+                        </li> 
+
                 <li>
-                    <a href="{{pathFor 'App.client.workorder'}}" class="nav-item">
-                      VIEW WORKORDER
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="{{pathFor 'App.logout'}}" class="nav-item">
-						LOGOUT                
+                    <a href="{{pathFor 'App.logout'}}" style="color: #ffffff;">
+                       Logout
                     </a>
                 </li>   
 			</ul>

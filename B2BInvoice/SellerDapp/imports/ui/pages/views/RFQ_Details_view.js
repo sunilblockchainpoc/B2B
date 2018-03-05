@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import './RFQ_Details_view.html';
-import '../../components/Buyer/rfq_details.js';
+import '../../components/Seller/rfq_details.js';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 var rfqid = new ReactiveVar();

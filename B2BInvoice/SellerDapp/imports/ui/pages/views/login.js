@@ -13,12 +13,11 @@ Template['login'].events({
             if (!error) 
             {
                 template.find("#loginbtn").disabled=false;
-                
                 if(result.address.length > 2){
-                    Session.set ({CICUserName:template.find("#username").value,
-                                CICUserAddress:result.address
+                    Session.set ({SellerUserName:template.find("#username").value,
+                                SellerUserAddress:result.address
                                 })
-                   FlowRouter.go('App.home');
+                   FlowRouter.go('App.order');
                }
                else
                 {

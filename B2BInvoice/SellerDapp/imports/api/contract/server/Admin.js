@@ -169,7 +169,7 @@ Meteor.methods({
              
    
     "createUser":function(params){
-        console.log("Create User")
+
         var dateint = parseInt(new Date().setHours(0,0,0,0));
         var block = web3.eth.getBlock('latest').number;
         var userAddedEvent = userRepositoryContractInstance.UserAdded();
@@ -183,15 +183,8 @@ Meteor.methods({
                     future.return(err);
                 }
                 if(result){
-                  console.log("Add user - Event Watch")
                   userAddedEvent.watch(function(error,eventResult){
                     if(eventResult){
-
-                      console.log(eventResult.blockNumber)
-                      console.log(eventResult.args.firstName)
-                      console.log(eventResult.args.lastName)                      
-
-
                         if(eventResult.blockNumber>block && eventResult.args.firstName==params.FirstName && eventResult.args.lastName==params.LastName)
                             userAddedEvent.stopWatching();
                             if (!future.isResolved())  {

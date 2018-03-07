@@ -1,3 +1,0 @@
-import './body.html';
-import '../header/header.html'
-import '../header/header.js'

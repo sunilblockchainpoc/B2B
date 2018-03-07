@@ -215,7 +215,7 @@ Meteor.methods({
     var requestDate = new Date(parseInt(RFQ[1])).toISOString().slice(0,10);
     var reqProductFileHash = RFQ[8]; 
     var resProductFileHash = RFQ[9];   
-
+    var reqproductDetailsJSON;
     if (reqProductFileHash.length > 0)
       reqproductDetailsJSON = getJSONObject(params.rfqID,reqProductFileHash);
 

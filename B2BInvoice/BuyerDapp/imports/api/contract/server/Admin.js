@@ -93,7 +93,7 @@ Meteor.methods({
       "createRFQContract": function(){ 
         console.log("Creating RFQ Contract")
           var contract = web3.eth.contract(JSON.parse(RFQContractABI));
-          var transactionObject = {from: web3.eth.accounts[0],data:RFQContractByteCode,gas:const_gas};
+          var transactionObject = {from: web3.eth.accounts[2],data:RFQContractByteCode,gas:const_gas};
           web3.eth.estimateGas(transactionObject,function(err,estimateGas){
             if(!err)
               transactionObject.gas = estimateGas * 2;

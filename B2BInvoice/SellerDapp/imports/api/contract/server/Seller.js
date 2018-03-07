@@ -147,7 +147,6 @@ Meteor.methods({
                                                        responseFileName,
                                                        resFileHash,
                                                        resProductFileHash,
-                                                       rfqStatusEnum.Responded.value,
                                                        transactionObject,function(err,result)
     {
       if(err){
@@ -155,17 +154,12 @@ Meteor.methods({
         future.return(err);
       }
       else{
-        console.log("Event watch started")
+        console.log("Response Event watch started")
         respondRFQEvent.watch(function(error,result){
-          console.log(result.blockNumber)
-          console.log(block)
-          console.log(result.args.status)
-          console.log(result.args.rfqID)
-          console.log(rfqID)
-
-          if(result.blockNumber>block && result.args.status && result.args.rfqID == rfqID ){
-              requestRFQEvent.stopWatching();
-              console.log("ID:"+result.args.rfqID);
+        if(result.blockNumber>block && result.args.status && result.args.rfqID == rfqID ){
+              respondRFQEvent.stopWatching();
+              console.log("Responded to RFQ-ID :"+result.args.rfqID);
+              console.log("Response Event watch Ended")
               future.return(parseInt(result.args.rfqID));
           }
         })
@@ -209,56 +203,56 @@ Meteor.methods({
    function getRFQDetail(uint rfqIndex) public view returns(uint rfqId,uint requestDt,   
                     RFQStatus status,string responseBy ,uint responseDt,uint rfqValue, string resFileName, string resFileHash,
                     string reqProductFileHash,string resProductFileHash)
-
-
   */
   "getRFQDetailByrfqID": function(params){ 
 
-  
-    var RFQ;
     var reqURL, resURL;
-    var RFQCount = RFQContractInstance.getRFQCount.call();
     var RFQDetail;
-    var productDetailsJSON = "";
-    if(RFQCount > 0) {
+  
+    var index = params.rfqID - 1;
+    var RFQ = RFQContractInstance.getRFQDetail.call(index)
+    var rfqID = parseInt(RFQ[0]);
+    var requestDate = new Date(parseInt(RFQ[1])).toISOString().slice(0,10);
+    var reqProductFileHash = RFQ[8]; 
+    var resProductFileHash = RFQ[9];   
+
+    if (reqProductFileHash.length > 0)
+      reqproductDetailsJSON = getJSONObject(params.rfqID,reqProductFileHash);
+
+    // Information Populated only when the RFQ Status is - Requested    
+    // Requested Product information services file
+
+    var resFileName = ""
+    var resFileHash = ""
+    var responseDate = ""
+    var resURL = ""
+    var resproductDetailsJSON = ""
+    // Information Populated only when the RFQ Status is - Responded
+    if (rfqStatusEnum.get(parseInt(RFQ[2])).value == rfqStatusEnum.Responded ){
+
+      if (resProductFileHash.length > 0)
+        resproductDetailsJSON = getJSONObject(params.rfqID,resProductFileHash);
       
-      for(var index=0;index<RFQCount;index++) {
-        
-        RFQ = RFQContractInstance.getRFQDetail.call(index);
-
-        resFileName = RFQ[6];// Seller Responded RFQ Filename
-        resFileHash = RFQ[7];// Seller Responded RFQ FileHash
-        resURL = "?name=" +resFileName + "&filehash=" +resFileHash;
-
-        // Requested Product information services file
-        reqProductFileHash = RFQ[8]; 
-        
-        if (reqProductFileHash.length > 0) {
-            productDetailsJSON = getJSONObject(params.rfqID,reqProductFileHash);
-        }
-
-        var rfqID = parseInt(RFQ[0]);
-        var requestDate = new Date(parseInt(RFQ[1])).toISOString().slice(0,10);
-
-        var data = {
-                      rfqID:rfqID,
-                      requestDate:requestDate,
-                      status:rfqStatusEnum.get(parseInt(RFQ[2])).key,
-                      responseBy:RFQ[3],
-                      responseDt:parseInt(RFQ[4]),
-                      rfqValue:parseInt(RFQ[5]),
-                      resFileName:resFileName,
-                      resURL:resURL,
-                      productDetailsJSON:productDetailsJSON
-                   }
-
-       //console.log("productDetailsJSON"+ JSON.stringify(productDetailsJSON))                   
-       if (params.rfqID==parseInt(RFQ[0])) {
-        RFQDetail = data;
-        break;
-       }
-      }
+      resFileName = RFQ[6];// Seller Responded RFQ Filename
+      resFileHash = RFQ[7];// Seller Responded RFQ FileHash
+  
+      resURL = "?name=" +resFileName + "&filehash=" +resFileHash
+      responseDate = new Date(parseInt(RFQ[4])).toISOString().slice(0,10);
     }
+
+    var data = {
+                  rfqID:rfqID,
+                  requestDate:requestDate,
+                  status:rfqStatusEnum.get(parseInt(RFQ[2])).key,
+                  responseBy:RFQ[3],
+                  responseDt:responseDate,
+                  rfqValue:parseInt(RFQ[5]),
+                  resFileName:resFileName,
+                  resURL:resURL,
+                  reqproductDetailsJSON:reqproductDetailsJSON,
+                  resproductDetailsJSON:resproductDetailsJSON
+               }
+    RFQDetail = data;
     return RFQDetail;
   },
 

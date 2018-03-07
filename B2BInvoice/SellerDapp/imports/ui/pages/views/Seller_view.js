@@ -12,7 +12,7 @@ The view1 template
 */
 import './Seller_view.html';
 import '../../components/Seller/seller_dashboard.js';
-import '../../components/Seller/seller_rfq.js';
+import '../../components/Seller/req_invoice_shipping.js';
 
 Template['Seller_view'].helpers({
     /**

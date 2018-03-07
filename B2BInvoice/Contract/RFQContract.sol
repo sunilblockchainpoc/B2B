@@ -53,7 +53,7 @@ contract RFQContract {
 
     // Event Handling
     event RFQRequested(uint rfqID,string requestBy,bool status);
-    event RFQResponded(uint rfqID,uint respondDate, bool status);
+    event RFQResponded(uint rfqID, bool status);
     event ErrorMessage(uint errno,string errMessage);
     event RFQstatusUpdate(uint rfqID,RFQStatus status,bool isSuccess);
 
@@ -98,7 +98,7 @@ contract RFQContract {
     }
 
     /* Seller uses this method and responds back to the RFQ */
-    function respondToRFQ (uint rfqId, uint rfqValue, string responseBy, uint responseDt, string resFileName, string resFileHash, string resProductFileHash, RFQStatus status) onlySeller public {
+    function respondToRFQ (uint rfqId, uint rfqValue, string responseBy, uint responseDt, string resFileName, string resFileHash, string resProductFileHash) onlySeller public {
 
         require(bytes(responseBy).length>0);
         require(bytes(resFileName).length>0);
@@ -119,16 +119,16 @@ contract RFQContract {
             RFQs[rfqIndex].responseFileHash = resFileHash;
 
             // Multiple status are possible
-            RFQs[rfqIndex].rfqStatus = status; 
+            RFQs[rfqIndex].rfqStatus = RFQStatus.Responded; 
 
             // Product wise details can be updated. Currently not used
             if (ProductSelectionDetails[rfqIndex].rfqID == rfqId) {
                 ProductSelectionDetails[rfqIndex].resProductFileHash = resProductFileHash;
             }
             
-            RFQResponded(RFQs[rfqIndex].rfqID,RFQs[rfqIndex].responseDt,true);
+            RFQResponded(RFQs[rfqIndex].rfqID,true);
         } else {
-            RFQResponded(RFQs[rfqIndex].rfqID,RFQs[rfqIndex].responseDt,false);
+            RFQResponded(RFQs[rfqIndex].rfqID,false);
             revert();
         }
     }

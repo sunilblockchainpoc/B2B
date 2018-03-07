@@ -116,7 +116,7 @@ Meteor.methods({
     var requestRFQEvent = RFQContractInstance.RFQRequested();
     var block = web3.eth.getBlock('latest').number;
     var future = new Future();
-
+  
     // Sending Transaction
     RFQContractInstance.requestRFQ.sendTransaction(
       requestBy,rfqRequestDt,reqProductFileHash,transactionObject,function(err,result)

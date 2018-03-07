@@ -1,10 +1,10 @@
 {
   "server": {
-    "RolesRepositoryContractAddress":"0x0a8c5b095e742dad3948bf0461ef3931140c47a0",
-    "UserRepositoryContractAddress":"0x559fd346010024524c12045941f916225a35ecef",
-    "RFQContractAddress":"0xbafd1198a11a8d4b5b43c8f77b332cf77e910531",
-    "POContractAddress":"0x1d35d2ac6b2c8f0f21160366319a9a9a041796cd",
-    "ShipmentContractAddress":"0xfd7f591da87108eef08273b67d91fb14caba12ef",
+    "RolesRepositoryContractAddress":"0x96552c4f90a7ab932af247ddbf93175fcbcefb05",
+    "UserRepositoryContractAddress":"0xb6b37e50c316b097a906061b5071f504ae0dc2bc",
+    "RFQContractAddress":"0xb61b24a83bbca08ba85e6520475931cec5d54396",
+    "POContractAddress":"0x379a0ba136211a7e41c7157302327aead43ec1f1",
+    "ShipmentContractAddress":"0xb268dbb0dea14fd1d7ba8bf0380cbb4b58cc9884",
     "tempPath": "/home/ethereum-admin/go/B2B/B2BInvoice/temp",
     "uploadURL":"http://localhost:9000/upload",
     "downloadURL":"http://localhost:9000/download",

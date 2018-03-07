@@ -60,7 +60,6 @@ FlowRouter.route('/Request/:rfq', {
       redirect('/login');
   }],
   action:function(params,queryParams) {
-    console.log(params)
       BlazeLayout.render('App_body', { top:'header', main: 'RFQ_Details_view',footer:'footer'});  
   },
 });

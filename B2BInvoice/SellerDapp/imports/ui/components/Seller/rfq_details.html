@@ -1,0 +1,141 @@
+<template name="components_rfq_details">
+    <div class="panel panel-default panel-dapp">
+        <div class="panel-heading">
+            RFQ Details
+        </div>
+        <div class="panel-body">
+ 
+            {{#with TemplateVar.get 'state'}}
+            {{#if isError}}
+                <div class="alert alert-warning">
+                    Error responding to quote.The error was: "{{error}}".
+                </div>
+            {{/if}}
+        
+            {{#if isMining}}
+                <div class="alert alert-info">
+                    Quote update is in progress ...
+                    <span class="badge text-right">
+                        <i class="fa fa-cog fa-spin"></i>
+                    </span>
+                </div>
+            {{/if}}
+        
+            {{#if isMined}}
+                <div class="alert alert-info">
+                    Quote {{rfqID}} has been successfully responded!!
+                </div>
+                <hr />
+                <br />
+            {{/if}}
+
+        {{/with}} 
+
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal">
+                   {{#with TemplateVar.get 'rfqData'}} 
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">RFQ Number:</label>
+                            <div class="col-sm-6">{{rfqID}}</div>
+                        </div>
+
+                        <div class="form-group">
+                                <label class="col-sm-4 control-label">Requested Date:</label>
+                                <div class="col-sm-6">{{requestDate}}</div>
+                        </div>
+                        <div class="form-group">
+                                <label class="col-sm-4 control-label">Responded By:</label>
+                                <div class="col-sm-6">{{responseBy}}</div>
+                        </div>
+                            
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Responded Date:</label>
+                            <div class="col-sm-6">
+                                    {{responseDt}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rfqAmount" class="col-sm-4 control-label">RFQ Amount</label>
+                            <div class="col-sm-2">
+                                <input type="text" id="rfqAmount" class="form-control" value="" placeholder="RFQ Amount" />
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="uploadResfile" class="col-sm-4 control-label">Upload Quote Information</label>
+                            <div class="col-sm-8">
+                                <input type="file" id="uploadResfile" class="control-label" /> 
+                            </div>
+                    </div> 
+
+
+                        <div class="form-group">
+                            <div class="col-sm-5">
+                                <button type="button" id="respondRFQ" style="position: relative;top: 10px;left: 72%;" class="btn btn-sm bg-all"> Respond
+                                </button>
+                            </div>
+                    </div>                        
+
+
+                        {{/with}} 
+
+                        <div class=" col-sm-9 table-responsive">
+                            <table class="table table-bordered">
+                                    <thead>
+                                         <tr>
+              <th></th>
+                                             <th>Product Details</th>
+                                             <th>Quantity</th>
+                                             <th>Cost</th>
+
+                                            </tr>
+                                     </thead>
+      <tbody>
+                                     <tr>
+     
+                                 <td><input   type="checkbox" value="" id="aashirvaad"  ></td>
+                                 <td>Aashirvaad</td>
+                                 <td ><input type="text" class="form-control" id="aashirvaad_value" value="" disabled/></td>
+                                 <td ><input type="text" class="form-control" id="aashirvaad_cost" value="" /></td>
+                                 
+                                     </tr>
+                                     <tr>
+     
+                                 <td><input   type="checkbox" value="" id="bingo"  ></td>
+                                 <td>Bingo</td>
+                                 <td ><input type="text" class="form-control" id="bingo_value" value="" disabled/></td>
+                                 <td ><input type="text" class="form-control" id="bingo_cost" value="" /></td>
+                                 
+                                 </tr>
+     
+                             <tr>
+                             <td><input   type="checkbox" value="" id="classmate"  ></td>
+                                 <td>Classmate</td>
+                                 <td class="col-3"><input type="text" class="form-control" id="classmate_value" value="" disabled/></td>
+                                 <td ><input type="text" class="form-control" id="classmate_cost" value="" /></td>
+                                 
+                             </tr>
+     
+     
+                             <tr>
+                             <td><input   type="checkbox" value="" id="bnatural"  ></td>
+                                 <td>B Natural</td>
+                                 <td class="col-3"><input type="text" class="form-control" id="bnatural_value" value="" disabled/></td>
+                                 <td ><input type="text" class="form-control" id="bnatural_cost" value="" /></td>
+                                 
+                             </tr>
+                                     </tbody>
+                                          </table>
+                    </div>                        
+
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+

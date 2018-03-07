@@ -1,0 +1,91 @@
+<template name="components_invoice_shipping">
+    <div class="panel panel-default panel-dapp">
+        <div class="panel-heading">
+            Generate Invoice and Initiate Shipping 
+        </div>
+        <div class="panel-body">
+ 
+            {{#with TemplateVar.get 'state'}}
+            {{#if isError}}
+                <div class="alert alert-warning">
+                    Error in Invoice Process.The error was: "{{error}}".
+                </div>
+            {{/if}}
+        
+            {{#if isMining}}
+                <div class="alert alert-info">
+                    Invoice & Shipment creation Inprogress  ...
+                    <span class="badge text-right">
+                        <i class="fa fa-cog fa-spin"></i>
+                    </span>
+                </div>
+            {{/if}}
+        
+            {{#if isMined}}
+                <div class="alert alert-info">
+                    Invoice Generated and Package Information sent to Shipper!!!
+                </div>
+                <hr />
+                <br />
+            {{/if}}
+
+        {{/with}} 
+
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal">
+                   {{#with TemplateVar.get 'rfqData'}} 
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">PO Number</label>
+                            <div class="col-sm-6">{{poNumber}}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Requested By</label>
+                            <div class="col-sm-6">{{responseBy}}</div>
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="invoiceFile" class="col-sm-4 control-label">Upload Invoice</label>
+                            <div class="col-sm-4">
+                                <input type="file" id="invoiceFile" class="control-label" /> 
+                            </div>
+                        </div> 
+
+                        <div class="form-group">
+                            <label for="packageDesc" class="col-sm-4 control-label">Package Description</label>
+                            <div class="col-sm-6">
+                                <input type="text" id="packageDesc" class="form-control" value="" placeholder="Short note about package" />
+                            </div>
+                        </div>                        
+
+                        <div class="form-group">
+                            <label for="shippingAddr" class="col-sm-4 control-label">Shipping Vendor</label>
+                            <div class="col-sm-6">
+                                <input type="text" id="shippingAddr" class="form-control" value="" placeholder="Shipper address" />
+                            </div>
+                        </div>                        
+
+                        <div class="form-group">
+                            <label for="packageFile" class="col-sm-4 control-label">Package Slip</label>
+                            <div class="col-sm-4">
+                                <input type="file" id="packageFile" class="control-label" /> 
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <div class="col-sm-5">
+                                <button type="button" id="Generate" style="position: relative;top: 10px;left: 72%;" class="btn btn-sm bg-all"> Generate
+                                </button>
+                            </div>
+                    </div>                        
+                        {{/with}} 
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+

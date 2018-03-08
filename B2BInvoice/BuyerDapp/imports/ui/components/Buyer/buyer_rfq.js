@@ -5,7 +5,7 @@ import { Session } from 'meteor/session'
 var sheetInfo = new ReactiveArray(); 
 
 Template['components_buyer_rfq'].onRendered(function(){
-	Session.setDefault('username',BuyerUserName);
+	//Session.setDefault('username',BuyerUserName);
     TemplateVar.set('state', {isInactive: true});
 });
 
@@ -33,7 +33,7 @@ Template['components_buyer_rfq'].events({
 		var textId,textValue;
 		var jsonObj = [];
 
-		console.log(productDetails);
+		//console.log(productDetails);
 
 		for(var i=0; i<productDetails.length;i++){
 
@@ -46,15 +46,12 @@ Template['components_buyer_rfq'].events({
 			jsonData["id"] =  "#" + productDetails[i].id;
 			jsonData["textid"] = textId;
 			jsonData["textvalue"] = textValue;
-
-			console.log(jsonData);
 			jsonObj.push(jsonData);
 		}
 
 		TemplateVar.set(template,'state', {isMining: true});
 		var data = {username: username,ProductData:jsonObj, nodeAddress:address};
-						
-			Meteor.call('requestRFQ',data,function(error,result){
+		Meteor.call('requestRFQ',data,function(error,result){
 				if (!error) 
 				{
 					if(typeof result !== 'undefined'){

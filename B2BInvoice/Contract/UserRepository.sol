@@ -145,10 +145,10 @@ contract UserRepository {
         return (MaxUserProfileId, MaxUserGroupId);
     }
 
-    function getUsers (uint32 index) public constant returns  (string, string, string, Status) {
+    function getUsers (uint32 index) public constant returns  (string, string, string, Status,string,address) {
 
         if (users[index].UserProfileId > 0) {
-            return (users[index].UserName, users[index].FirstName, users[index].LastName, users[index].UserStatus);
+            return (users[index].UserName, users[index].FirstName, users[index].LastName, users[index].UserStatus,users[index].password, users[index].peerAddress);
         }
     }
 

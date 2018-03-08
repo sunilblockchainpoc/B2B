@@ -29,61 +29,52 @@
             	{{/if}}
 
             {{/with}} 
-
-            <div class="row">
-                <div class="col-md-12">
-                    <form class="form-horizontal">
-                    </form>
-                    
-                    <div class=" col-sm-9 table-responsive">
+                   
+                    <div class=" col-sm-12 table-responsive">
                             <table class="table table-bordered">
-                                    <thead>
-                                         <tr>
-              <th></th>
-                                             <th>Product Details</th>
-                                             <th>Quantity</th>
-                                         </tr>
-                                     </thead>
-      <tbody>
+                                <thead>
+                                        <tr>
+                                            <th>Select</th>
+                                            <th>Product Details</th>
+                                            <th>Quantity</th>
+                                        </tr>
+                                    </thead>
+                                <tbody>
                                      <tr>
      
-                                 <td><input   type="checkbox" value="" id="aashirvaad"  ></td>
-                                 <td>Aashirvaad</td>
-                                 <td ><input type="text" class="form-control" id="aashirvaad_value" value="" disabled/></td>
+                                 <td class="col-sm-1"><input type="checkbox" value="" id="aashirvaad"  ></td>
+                                 <td class="col-sm-4">Aashirvaad</td>
+                                 <td class="col-xs-1" ><input type="text" class="form-control" id="aashirvaad_value" value="" disabled/></td>
                                      </tr>
-                                     <tr>
+                                 <tr>
      
                                  <td><input   type="checkbox" value="" id="bingo"  ></td>
                                  <td>Bingo</td>
-                                 <td ><input type="text" class="form-control" id="bingo_value" value="" disabled/></td>
+                                 <td class="col-xs-1" ><input type="text" class="form-control" id="bingo_value" value="" disabled/></td>
                                  </tr>
      
                              <tr>
                              <td><input   type="checkbox" value="" id="classmate"  ></td>
                                  <td>Classmate</td>
-                                 <td class="col-3"><input type="text" class="form-control" id="classmate_value" value="" disabled/></td>
+                                 <td class="col-xs-1"><input type="text" class="form-control" id="classmate_value" value="" disabled/></td>
                              </tr>
      
      
                              <tr>
                              <td><input   type="checkbox" value="" id="bnatural"  ></td>
                                  <td>B Natural</td>
-                                 <td class="col-3"><input type="text" class="form-control" id="bnatural_value" value="" disabled/></td>
+                                 <td class="col-xs-1"><input type="text" class="form-control" id="bnatural_value" value="" disabled/></td>
                              </tr>
                                      </tbody>
      
                                      </table>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-sm-5">
-                            <button type="button" id="submitRequestRFQ" style="position: relative;top: 10px;left: 72%;" class="btn btn-sm bg-all"> Request For Quote
-                            </button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+                                     
+                            </div>
+                           
+                            <div class="col-sm-6">
+                                    <button type="button" id="submitRequestRFQ" style="position: relative;top: 10px;left: 40%;" class="btn btn-sm bg-all"> Request For Quote
+                                    </button>
+                            </div>
         </div>
     </div>
 </template>

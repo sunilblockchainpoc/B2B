@@ -10,6 +10,8 @@ import '../../ui/layouts/footer/footer.js';
 import '../../ui/pages/views/Buyer_view.js';
 import '../../ui/pages/views/Admin_view.js';
 import '../../ui/pages/views/RFQ_Details_view.js';
+import '../../ui/pages/views/PurchaseOrder_Create.js';
+import '../../ui/pages/views/PurchaseOrder_details.js';
 import '../../ui/pages/views/login.js';
 
 // Set up all routes in the app
@@ -64,6 +66,30 @@ FlowRouter.route('/Request/:rfq', {
       BlazeLayout.render('App_body', { top:'header', main: 'RFQ_Details_view',footer:'footer'});  
   },
 });
+
+FlowRouter.route('/PurchaseOrder/Create', {
+  name: 'App.po.create',
+  triggersEnter: [function(context, redirect) {
+    if(!Session.get("BuyerUserName"))
+      redirect('/login');
+  }],
+  action() {
+    BlazeLayout.render('App_body', { top:'header', main: 'PurchaseOrder_Create', footer:'footer' });
+  },
+});
+
+FlowRouter.route('/PurchaseOrder/Details/:poNumber', {
+  name: 'App.po.details',
+  triggersEnter: [function(context, redirect) {
+    if(!Session.get("BuyerUserName"))
+      redirect('/login');
+  }],
+  action:function(params,queryParams) {
+    //console.log(params)
+    BlazeLayout.render('App_body', { top:'header', main: 'PurchaseOrder_details', footer:'footer' });
+  },
+});
+
 
 
 FlowRouter.route('/logout', {

@@ -10,6 +10,9 @@ import '../../ui/layouts/footer/footer.js';
 import '../../ui/pages/views/Seller_view.js';
 import '../../ui/pages/views/Admin_view.js';
 import '../../ui/pages/views/RFQ_Details_view.js';
+import '../../ui/pages/views/Invoice_Details_view.js';
+import '../../ui/pages/views/Shipment_Details_view.js';
+
 import '../../ui/pages/views/login.js';
 
 // Set up all routes in the app
@@ -53,7 +56,7 @@ FlowRouter.route('/order', {
   },
 });
 
-FlowRouter.route('/Request/:rfq', {
+FlowRouter.route('/RFQ/:rfq', {
   name: 'App.rfq.details',
   triggersEnter: [function(context, redirect) {
     if(!Session.get("SellerUserName"))
@@ -63,6 +66,31 @@ FlowRouter.route('/Request/:rfq', {
       BlazeLayout.render('App_body', { top:'header', main: 'RFQ_Details_view',footer:'footer'});  
   },
 });
+
+FlowRouter.route('/Invoice/:inv', {
+  name: 'App.invoice.details',
+  triggersEnter: [function(context, redirect) {
+    if(!Session.get("SellerUserName"))
+      redirect('/login');
+  }],
+  action:function(params,queryParams) {
+      BlazeLayout.render('App_body', { top:'header', main: 'Invoice_Details_view',footer:'footer'});  
+  },
+});
+
+FlowRouter.route('/Shipment/:ship', {
+  name: 'App.shipping.details',
+  triggersEnter: [function(context, redirect) {
+    if(!Session.get("SellerUserName"))
+      redirect('/login');
+  }],
+  action:function(params,queryParams) {
+      BlazeLayout.render('App_body', { top:'header', main: 'Shipment_Details_view',footer:'footer'});  
+  },
+});
+
+
+
 
 
 FlowRouter.route('/logout', {

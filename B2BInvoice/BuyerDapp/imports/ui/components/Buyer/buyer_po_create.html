@@ -1,0 +1,81 @@
+<template name="components_buyer_po_create">
+    <div class="panel panel-default panel-dapp">
+	<div class="panel-heading">
+            Create Purchase Order
+	</div>
+      <div class="panel-body">
+            {{#with TemplateVar.get 'state'}}
+                {{#if isError}}
+                    <div class="alert alert-warning">
+                        Purchase Order Creation failed.
+                    </div>
+                {{/if}}
+               
+                
+                {{#if isMining}}
+                    <div class="alert alert-info">
+                      Purchase Order Creation progress...
+                        <span class="badge text-right">
+                            <i class="fa fa-cog fa-spin"></i>
+                        </span>
+                    </div>
+                {{/if}}
+            
+                {{#if isMined}}
+                    <div class="alert alert-info">
+                        Purchase Order Created Successfully! The PO Number is {{poNumber}}.
+                    </div>
+      
+                {{/if}}
+
+            {{/with}} 
+
+	<div class="row">
+        <div class="col-md-12">
+            <form class="form-horizontal">
+
+  <!--      <div class="form-group">
+            <label for="client_rfq_id" class="col-sm-4 control-label">RFQ ID</label>
+            <div class="col-sm-4">
+                    <input type="text" id="client_rfq_id" class="form-control" value="" />
+            </div>
+        </div> -->
+
+        <div class="form-group">
+            <label for="buyer_rfq_id" class="col-sm-4 control-label">Select Accepted Quote</label>
+            <div class="col-xs-1">
+                <select class="form-control" id="buyer_rfq_id"> 
+                {{#each getRFQs}}
+                    <option value={{id}}>{{id}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+       
+        <div class="form-group">
+            <label for="po_description" class="col-sm-4 control-label">PO Description</label>
+            <div class="col-sm-3">
+                    <input type="text"  id="po_description" class="form-control" value=""  /> 
+            </div>
+        </div> 
+
+        <div class="form-group">
+            <label for="uploadfile" class="col-sm-4 control-label">Upload PO</label>
+            <div class="col-sm-4">
+                <input type="file" id="uploadfile"  class="control-label" />
+            </div>
+        </div> 
+
+		<div class="form-group">
+			<div class="col-sm-5">
+                <button type="button" id="btnCreatePO" style="position: relative;top: 10px;left: 72%;" class="btn btn-sm bg-all">Create PO
+                </button>
+    		</div>
+			
+        </div>
+	</form>
+	</div>
+	</div>
+    </div>
+    </div>
+</template>

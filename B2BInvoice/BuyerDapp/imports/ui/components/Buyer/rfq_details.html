@@ -4,6 +4,44 @@
             RFQ Details
         </div>
         <div class="panel-body">
+
+                {{#with TemplateVar.get 'state'}}
+                {{#if isError}}
+                    <div class="alert alert-warning">
+                        Error updating the quote status. The error was "{{error}}"
+                    </div>
+                {{/if}}
+            
+                {{#if isMining}}
+                    <div class="alert alert-info">
+                        Status update is in progress...
+                        <span class="badge text-right">
+                            <i class="fa fa-cog fa-spin"></i>
+                        </span>
+                    </div>
+                {{/if}}
+            
+                {{#if isMined}}
+                {{#if statusUpdated}}
+                    <div class="alert alert-info">
+                        The status has been updated successfully!!
+                    </div>
+                    <hr />
+                    <br />
+                
+                {{else}}    
+
+                    <div class="alert alert-warning">
+                        Error updating the quote status. The error was "{{error}}"
+                    </div>
+                    <hr />
+                    <br />
+            	{{/if}}
+                   {{/if}} 
+            {{/with}} 
+
+
+
  
             <div class="row">
                 <div class="col-md-12">
@@ -57,41 +95,44 @@
 
                         {{/with}} 
 
-                        <div class=" col-sm-9 table-responsive">
+                        <div class=" col-sm-6 table-responsive">
                             <table class="table table-bordered">
                                     <thead>
                                          <tr>
-              <th></th>
+                                            <th>Select</th>
                                              <th>Product Details</th>
                                              <th>Quantity</th>
+                                             <th>Cost</th>
                                          </tr>
                                      </thead>
-      <tbody>
-                                     <tr>
+                                    <tbody>
+                                    <tr>
      
-                                 <td><input   type="checkbox" value="" id="aashirvaad"  ></td>
-                                 <td>Aashirvaad</td>
-                                 <td ><input type="text" class="form-control" id="aashirvaad_value" value="" disabled/></td>
-                                     </tr>
-                                     <tr>
+                                        <td class="col-xs-1"><input type="checkbox" value="" id="aashirvaad"></td>
+                                        <td class="col-sm-3">Aashirvaad</td>
+                                        <td class="col-sm-1"><input type="text" class="form-control" id="aashirvaad_value" value="" disabled/></td>
+                                        <td class="col-sm-2"><input type="text" class="form-control" id="aashirvaad_cost" value="" disabled/></td>
+                                    </tr>
+                                    <tr>
+        
+                                    <td><input   type="checkbox" value="" id="bingo"  ></td>
+                                    <td>Bingo</td>
+                                    <td class="col-xs-1"><input type="text" class="form-control" id="bingo_value" value="" disabled/></td>
+                                    <td class="col-xs-1"><input type="text" class="form-control" id="bingo_cost" value="" disabled/></td>
+                                    </tr>
      
-                                 <td><input   type="checkbox" value="" id="bingo"  ></td>
-                                 <td>Bingo</td>
-                                 <td ><input type="text" class="form-control" id="bingo_value" value="" disabled/></td>
-                                 </tr>
-     
-                             <tr>
-                             <td><input   type="checkbox" value="" id="classmate"  ></td>
-                                 <td>Classmate</td>
-                                 <td class="col-3"><input type="text" class="form-control" id="classmate_value" value="" disabled/></td>
-                             </tr>
-     
-     
-                             <tr>
-                             <td><input   type="checkbox" value="" id="bnatural"  ></td>
-                                 <td>B Natural</td>
-                                 <td class="col-3"><input type="text" class="form-control" id="bnatural_value" value="" disabled/></td>
-                             </tr>
+                                    <tr>
+                                        <td><input   type="checkbox" value="" id="classmate"  ></td>
+                                        <td>Classmate</td>
+                                        <td class="col-xs-1"><input type="text" class="form-control" id="classmate_value" value="" disabled/></td>
+                                        <td class="col-xs-1"><input type="text" class="form-control" id="classmate_cost" value="" disabled/></td>
+                                    </tr>
+                                    <tr>
+                                    <td><input   type="checkbox" value="" id="bnatural"  ></td>
+                                        <td>B Natural</td>
+                                        <td class="col-xs-1"><input type="text" class="form-control" id="bnatural_value" value="" disabled/></td>
+                                        <td class="col-xs-1"><input type="text" class="form-control" id="bnatural_cost" value="" disabled/></td>
+                                    </tr>
                                      </tbody>
      
                                      </table>

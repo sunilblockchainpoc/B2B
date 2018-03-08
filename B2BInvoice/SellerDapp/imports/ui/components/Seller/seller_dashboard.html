@@ -14,7 +14,8 @@
                                     <td>RFQ Status</td>
                                     <td>PO Number</td>
                                     <td>Invoice Number</td>
-                                    <td>Shipment Details</td>
+                                    <td>Shipping Status</td>
+                                    <td>Track Shipping</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -22,20 +23,12 @@
                             {{#if list}}
                             {{#each getRFQList}}
                             <tr>
-                               <td><a href="{{pathFor 'App.rfq.details' rfq=(rfqID)}}" id={{rfqID}} class="namelink">{{rfqID}}</a></td>
+                               <td><a href="{{pathFor 'App.rfq.details' rfq=(rfqID)}}" id={{rfqID}} class="namelink">RFQ{{rfqID}}</a></td>
                                <td>{{status}}</td>
-                               <td>{{poNumber}}</td>
-                                    <td>
-                                    <a href =""  id={{reqURL}} class="reqfilelink">
-                                        {{reqFileName}}
-                                     </a>
-                                    </td>
-                                    <td>
-                                        <a href="" id={{resURL}} class="resfilelink">
-                                            {{resFileName}}
-                                         </a>
-                                        </td>
-                                    <td>{{rfqValue}}</td>
+                               <td>PUR{{poNumber}}</td>
+                               <td><a href="{{pathFor 'App.invoice.details' inv=(invoiceNo)}}" id={{invoiceNo}} class="namelink">ITC{{invoiceNo}}</a></td>
+                               <td>{{shipmentStatus}}</td>
+                               <td><a href="{{pathFor 'App.shipping.details' ship=(shipmentID)}}" id={{shipmentID}} class="namelink">FedEx{{shipmentID}}</a></td>
                             </tr>
                             {{/each}}
                             {{/if}}

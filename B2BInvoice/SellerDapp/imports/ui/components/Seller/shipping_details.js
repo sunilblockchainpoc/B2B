@@ -1,17 +1,18 @@
-import './rfq_details.html';
+import './shipping_details.html';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-
-var rfqId,rfqStatus;
-rfqStatus = 2;
-var reqServices = new ReactiveArray();
-var Enum = require("enum");
-var rfqStatusEnum = new Enum({'Requested': 0, 'Responded': 1, 'Accepted': 2, 'Declined':3});
+var shipmentID = new ReactiveVar();
 
 // This method is rendered on click of RFQ ID
-Template['components_rfq_details'].onRendered(function(){
+Template['components_shipping_details'].onRendered(function(){
+
+    shipmentID = new ReactiveVar(FlowRouter.getParam("ship"));
+    var params = {shipmentID:parseInt(shipmentID.get())};
+	var template = this;
+    TemplateVar.set(template,'ShipmentData', {});
+
     rfqId = new ReactiveVar(FlowRouter.getParam("rfq"));
 
 	var template = this;
@@ -72,7 +73,7 @@ Template['components_rfq_details'].onRendered(function(){
     });
 });
 
-Template['components_rfq_details'].events({
+Template['components_shipping_details'].events({
 
 	"click #respondRFQ": function(event, template){ 
         

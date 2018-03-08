@@ -14,6 +14,7 @@ import './Admin_view.html';
 import '../../components/admin/admin.js';
 import '../../components/admin/admin_changepassword.js';
 import '../../components/admin/admin_createuser.js';
+import '../../components/admin/admin_listuser.js';
 
 Template['Admin_view'].helpers({
     /**

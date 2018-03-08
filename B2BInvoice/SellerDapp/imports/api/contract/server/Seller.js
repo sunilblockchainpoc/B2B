@@ -184,12 +184,17 @@ Meteor.methods({
         var rfqID = parseInt(RFQ[0]);
         var poNumber = parseInt(POContractInstance.getPONumberByrfqID(rfqID));
         var status = rfqStatusEnum.get(parseInt(RFQ[2])).key;
-        var Details = POContractInstance.getInvoiceAndPackageByPO(poNumber);
+        var Details = POContractInstance.getInvoiceAndPackageByPO(1);//TODO
+
         var invoiceNo = parseInt(Details[0]);
         var packageID = parseInt(Details[1]);
         var shipmentID = parseInt(ShipmentContractInstance.getShipmentIDByPackageID(packageID));
+        
+        var ShippingDetails = ShipmentContractInstance.getShipmentDetail(shipmentID);
 
-        var data = {rfqID:rfqID,status:status,poNumber:poNumber,invoiceNo:invoiceNo,shipmentID:shipmentID};
+        var shipmentStatus = shippingStatusEnum.get(parseInt(ShippingDetails[4])).key;
+
+        var data = {rfqID:rfqID,status:status,poNumber:poNumber,invoiceNo:invoiceNo,shipmentID:shipmentID,shipmentStatus:shipmentStatus};
 
       RFQList.push(data);
     }
@@ -290,23 +295,23 @@ Meteor.methods({
   "getInvoiceDetailByInvoiceNumber": function(params){ 
 
     var invoiceNumber = params.invoiceNumber;
-    var index = invoiceNumber - 1000000;
-    var invoiceDetails;
-    var InvoiceList = new Array;
-
-    invoiceDetails = POContractInstance.getInvoiceDetailsByInvoiceIndex(index);
+    var index = invoiceNumber - 1000000 - 1;
+    var invoiceDetails = POContractInstance.getInvoiceDetailsByInvoiceIndex(index);
+    var InvoiceList;
     var r_invoiceNumber = parseInt(invoiceDetails[1]);
     
     if (r_invoiceNumber != invoiceNumber) 
       return;
     
+    var poNumber = parseInt(invoiceDetails[0]);
     var invoiceFileName = invoiceDetails[3];
     var invoiceFileHash = invoiceDetails[4];
-    var invoiceURL = "?name=" +invoiceFileName + "&filehash=" +invoiceFileHash;
 
-    var data = {invoiceNumber:r_invoiceNumber,invoiceFileName:invoiceFileName,invoiceURL:invoiceURL};
-    InvoiceList.push(data);
+    var invoiceURL = "?name=" +invoiceFileName + "&filehash=" +invoiceFileHash;
+    var data = {poNumber:poNumber,invoiceNumber:r_invoiceNumber,invoiceFileName:invoiceFileName,invoiceURL:invoiceURL};
     
+    InvoiceList = data;
+
     return InvoiceList;
   },
 
@@ -353,23 +358,49 @@ Meteor.methods({
    string packageSlipFileName, string packageSlipFileHash ) onlySeller public {
   */
     "createInvoiceAndPurchaseSlip":function(params){
-   
-      // Input Params
-      var packageDescription = params.packageDescription;
-      var poNumber = params.poNumber;
 
-      //TODO
-      var invoiceReceiptFileName = params.invoiceReceiptFileName;
-      var invoiceReceiptFileHash = params.invoiceReceiptFileHash;
-      var packageSlipFileName = params.packageSlipFileName;
-      var packageSlipFileHash = params.packageSlipFileHash;
- 
+      // Config Params
+      var uploadURL = Meteor.settings.server.uploadURL;
+      var asyncFunc  = Meteor.wrapAsync( HTTP.post );
+
+      // Input Params
+      var packageDescription = params.packageDesc;
+      var poNumber = params.poNumber;
+      var invoiceFileName = params.invoiceFilename;
+      var packageSlipFileName = params.packageFilename;
+      var username = params.username;
+      var address = params.address;
+
+      /****************** Uploading Invoice file to IPFS  ***************************************************/
+      var invoiceFiledata = {fileName:params.invoiceFilename, file: new Buffer(params.invoiceFiledata)}
+      
+      var invoiceResult = asyncFunc(uploadURL,{
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        content:JSON.stringify(invoiceFiledata)
+      }); 
+  
+      // Invoice Filehash from IPFS
+      var invoiceFileHash = invoiceResult.content;
+
+
+      /****************** Uploading Package file to IPFS  ***************************************************/
+
+      var packageFiledata = {fileName:params.packageFilename, file: new Buffer(params.packageFiledata)}
+      
+      var packageResult = asyncFunc(uploadURL,{
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        content:JSON.stringify(packageFiledata)
+      }); 
+  
+      // Invoice Filehash from IPFS
+      var packageFileHash = packageResult.content;
       // Transaction object
       var transactionObject = {
-        data: RFQContractByteCode, 
-        from: params.nodeAddress,
-        gasPrice: web3.eth.gasPrice,
-        gas: const_gas
+        data: POContractByteCode,from: params.nodeAddress,gasPrice: web3.eth.gasPrice,gas: const_gas
       };
   
       web3.eth.estimateGas(transactionObject,function(err,estimateGas){
@@ -383,31 +414,41 @@ Meteor.methods({
       var InvoiceCreatedEvent = POContractInstance.InvoiceCreated();
       var block = web3.eth.getBlock('latest').number;
       var future = new Future();
+
       // Sending Transaction
-      
       POContractInstance.createInvoice.sendTransaction(
-        ShipmentContractAddr,packageDescription,poNumber,invoiceReceiptFileName,invoiceReceiptFileHash,
-        packageSlipFileName,packageSlipFileHash,transactionObject,function(err,result)
-      {
-        if(err){
+                                                         ShipmentContractAddr,
+                                                         packageDescription,
+                                                         poNumber,
+                                                         invoiceFileName,
+                                                         invoiceFileHash,
+                                                         packageSlipFileName,
+                                                         packageFileHash,
+                                        transactionObject,function(err,result) {
+      if(err){
           console.log(err);
           future.return(err);
-        }
-        else{
-          InvoiceCreatedEvent.watch(function(error,result){
-            if(result.blockNumber>block && result.args.status && result.args.ponumber == poNumber ){
-              PurchaseOrderCreatedEvent.stopWatching();
-                console.log("Invoice Number :"+result.args.invoiceNumber);
-                console.log("Package Number :"+result.args.packageID);
-                future.return(parseInt(result.args.status));
-            }
-          })
+      }
+      else {
+                console.log("Invoice Event watch started ...")
+
+                InvoiceCreatedEvent.watch(function(error,result){
+               
+                  console.log("Invoice Event watch ended ...")
+                
+                  if(result.blockNumber>block && result.args.status && result.args.ponumber == poNumber ) {
+                      // Stop watching
+                      InvoiceCreatedEvent.stopWatching();
+                      console.log("Invoice Number : "+result.args.invoiceNumber);
+                      console.log("Package Number : "+result.args.packageID);
+                      future.return(parseInt(result.args.status));
+                
+                  }
+            })
         }
       });
       return future.wait();
     },
-
-
 });
 
 function getJSONObject (name,filehash)

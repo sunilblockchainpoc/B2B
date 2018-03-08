@@ -27,6 +27,8 @@ contract POContract {
         uint poNumber;
         string description;
         uint poReqDate;
+        string poFileName;
+        string poFileHash;
 
     }
 
@@ -65,12 +67,12 @@ contract POContract {
     event InvoiceCreated(uint ponumber,uint invoiceNumber,uint packageID,bool status);
     // This method is used by the buyer to create Purchase Order
     
-    function createPurchaseOrder(uint rfqID,string description,uint poReqDate ) onlyBuyer public {
+    function createPurchaseOrder(uint rfqID,string description,uint poReqDate, string poFileName, string poFileHash ) onlyBuyer public {
         
         require(rfqID>0);
         require(poReqDate>0);
         
-        PurchaseOrderDetails[PURCHASE_ORDER_COUNTER] = PurchaseOrderDetail(rfqID,PURCHASE_ORDER_COUNTER+1,description,poReqDate);
+        PurchaseOrderDetails[PURCHASE_ORDER_COUNTER] = PurchaseOrderDetail(rfqID,PURCHASE_ORDER_COUNTER+1,description,poReqDate,poFileName,poFileHash);
        // Successful purchase order creation
         PurchaseOrderCreated(rfqID,PURCHASE_ORDER_COUNTER+1,true);
         RFQtoPO[rfqID] = PURCHASE_ORDER_COUNTER+1;
@@ -88,13 +90,15 @@ contract POContract {
     }
 
     // This method is used to get the respective PO detail
-    function getPurchaseOrderDetailByPOIndex(uint poIndex) view public returns (uint rfqID,uint poNumber, string description,uint poReqDate) {
+    function getPurchaseOrderDetailByPOIndex(uint poIndex) view public returns (uint rfqID,uint poNumber, string description,uint poReqDate, string fileName, string fileHash) {
        
         // Getting the appropriate PO details
         rfqID = PurchaseOrderDetails[poIndex].rfqID;
         poNumber = PurchaseOrderDetails[poIndex].poNumber;
         description = PurchaseOrderDetails[poIndex].description;
         poReqDate = PurchaseOrderDetails[poIndex].poReqDate;
+        fileName = PurchaseOrderDetails[poIndex].poFileName;
+        fileHash = PurchaseOrderDetails[poIndex].poFileHash;
     }
 
     // This method is used by Seller to generate invoice and payslip

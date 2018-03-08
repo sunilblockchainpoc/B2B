@@ -12,7 +12,6 @@ Template['components_invoice_shipping'].onRendered(function(){
     TemplateVar.set(template,'rfqData', {});
 
     var params = {rfqID:parseInt(rfqId.get())};
-    console.log(params)
     Meteor.call('getRFQDetailByrfqID',params,function(error,result){
         
         if (result) {
@@ -28,7 +27,6 @@ Template['components_invoice_shipping'].onRendered(function(){
         // Get the Product details provided by Buyer
         var reqproductDetailsJSON = result.reqproductDetailsJSON;
         var resproductDetailsJSON = result.resproductDetailsJSON;
-        console.log(resproductDetailsJSON)
         if (resproductDetailsJSON.length > 0) {
 
             for(var i=0;i<resproductDetailsJSON.length; i++) {
@@ -73,22 +71,24 @@ Template['components_invoice_shipping'].events({
         template.find("#Generate").disabled=true;
 
         // Get all the input params
-        var poNumber     = template.find("#ponumber").value;
+        var poNumber     = 1//template.find("#ponumber").value; TODO
         var packageDesc  = template.find("#packageDesc").value;
         var shippingAddr = template.find("#shippingAddr").value;
+		var username = Session.get("SellerUserName");
+        var address = Session.get("SellerUserAddress");
 
         // Get the Invoice/Package File details
         var invoiceReader = new FileReader();
+        var invoiceFilename = template.find("#invoiceFile").files[0].name;
+
         var packageReader = new FileReader();
-        var invoiceFiledata = "";
-        var packageFiledata = "";
-        
+        var packageFilename = template.find("#packageFile").files[0].name;
+       
         invoiceReader.onload = function(event){
             
             invoiceFiledata = new Uint8Array(invoiceReader.result);
         }        
         invoiceReader.readAsArrayBuffer(template.find("#invoiceFile").files[0]);
-        var fileName = template.find("#uploadResfile").files[0].name;
 
         packageReader.onload = function(event){
             
@@ -99,14 +99,16 @@ Template['components_invoice_shipping'].events({
             var data = {poNumber:poNumber,
                         packageDesc:packageDesc,
                         invoiceFilename:invoiceFilename, 
-                        invoideFileData:invoiceFiledata,
+                        invoiceFiledata:invoiceFiledata,
                         packageFilename:packageFilename, 
                         packageFiledata:packageFiledata,
                         ResponseBy: username,
                         nodeAddress: address
                         };
-                
-            Meteor.call('respondRFQ',data,function(error,result){
+             
+                        console.log(data)
+
+            Meteor.call('createInvoiceAndPurchaseSlip',data,function(error,result){
                     if (!error) 
                     {
                         template.find("#Generate").disabled=false;

@@ -93,7 +93,7 @@ Meteor.methods({
       "createRFQContract": function(){ 
         console.log("Creating RFQ Contract")
           var contract = web3.eth.contract(JSON.parse(RFQContractABI));
-          var transactionObject = {from: web3.eth.accounts[2],data:RFQContractByteCode,gas:const_gas};
+          var transactionObject = {from: web3.eth.accounts[0],data:RFQContractByteCode,gas:const_gas};
           web3.eth.estimateGas(transactionObject,function(err,estimateGas){
             if(!err)
               transactionObject.gas = estimateGas * 2;
@@ -206,6 +206,20 @@ Meteor.methods({
         return future.wait();
     },
 
+    "getUsersList":function(params){
+
+      var UserDetail;
+      var UserCount = parseInt(userRepositoryContractInstance.getCount.call());
+      var UserList = new Array;
+      if(UserCount > 0) {
+        for(var index=0;index<UserCount;index++) {
+          UserDetail = userRepositoryContractInstance.getUsers.call(index);
+          var data = {firstName:UserDetail[1],lastName:UserDetail[2],userName:UserDetail[0],password:UserDetail[4], address:UserDetail[5]};
+          UserList.push(data);
+        }
+      }
+      return UserList;
+    },
 
     "changePassword":function(params){
         

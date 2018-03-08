@@ -1,7 +1,7 @@
-<template name="components_buyer_dashboard">
+<template name="components_shipping_details">
     <div class="panel panel-default panel-dapp">
         <div class="panel-heading">
-            RFQ Details 
+            Shipment Information
         </div>
         <div class="panel-body">
             <div class="row">
@@ -10,30 +10,23 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <td>RFQ Number</td>
                                     <td>PO Number</td>
+                                    <td>PO Receipt</td>
                                     <td>Invoice Number</td>
-                                    <td>Shipment Details</td>
+                                    <td>Invoice Date</td>
+                                    <td>Invoice File</td>
                                 </tr>
                             </thead>
                             <tbody>
                             {{#with TemplateVar.get 'state'}}
                             {{#if list}}
-                            {{#each getRFQList}}
+                            {{#each getInvoiceList}}
                             <tr>
-                               <td><a href="{{pathFor 'App.rfq.details' rfq=(rfqID)}}" id={{rfqID}} class="namelink">{{rfqID}}</a></td>
-                               <td><a href="{{pathFor 'App.po.details' poNumber=(poNumber)}}" id={{poNumber}} class="namelink">PO-{{poNumber}}</a></td>
-                                <td>
-                                <a href =""  id={{reqURL}} class="reqfilelink">
-                                    {{reqFileName}}
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="" id={{resURL}} class="resfilelink">
-                                        {{resFileName}}
-                                        </a>
-                                </td>
-                                <td>{{rfqValue}}</td>
+                                <td>{{purchaseNo}}</td>
+                                <td>{{purchaseFile}}</td>
+                                <td>{{invoiceNo}}</td>
+                                <td>{{invoiceDate}}</td>
+                                <td>{{invoiceFile}}</td>
                             </tr>
                             {{/each}}
                             {{/if}}
@@ -47,3 +40,4 @@
         </div>
     </div>
 </template>
+

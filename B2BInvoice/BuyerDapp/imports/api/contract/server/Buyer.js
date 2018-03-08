@@ -129,7 +129,6 @@ Meteor.methods({
           requestRFQEvent.watch(function(error,result){
           if(result.blockNumber>block && result.args.status && result.args.requestBy == requestBy ){
               requestRFQEvent.stopWatching();
-              console.log("ID:"+result.args.rfqID);
               future.return(parseInt(result.args.rfqID));
           }
         })
@@ -177,48 +176,53 @@ Meteor.methods({
 
   "getRFQDetailByrfqID": function(params){ 
 
-    var RFQ;
     var reqURL, resURL;
-    var RFQCount = RFQContractInstance.getRFQCount.call();
     var RFQDetail;
-    var productDetailsJSON = "";
-    if(RFQCount > 0) {
+  
+    var index = params.rfqID - 1;
+    var RFQ = RFQContractInstance.getRFQDetail.call(index)
+    var rfqID = parseInt(RFQ[0]);
+    var requestDate = new Date(parseInt(RFQ[1])).toISOString().slice(0,10);
+    var reqProductFileHash = RFQ[8]; 
+    var resProductFileHash = RFQ[9];   
+    var reqproductDetailsJSON;
+    if (reqProductFileHash.length > 0)
+      reqproductDetailsJSON = getJSONObject(params.rfqID,reqProductFileHash);
+
+    // Information Populated only when the RFQ Status is - Requested    
+    // Requested Product information services file
+
+    var resFileName = ""
+    var resFileHash = ""
+    var responseDate = ""
+    var resURL = ""
+    var resproductDetailsJSON = ""
+    // Information Populated only when the RFQ Status is - Responded
+    if (rfqStatusEnum.get(parseInt(RFQ[2])).value == rfqStatusEnum.Responded ){
+
+      if (resProductFileHash.length > 0)
+        resproductDetailsJSON = getJSONObject(params.rfqID,resProductFileHash);
       
-      for(var index=0;index<RFQCount;index++) {
-        
-        RFQ = RFQContractInstance.getRFQDetail.call(index);
-
-        resFileName = RFQ[6];// Seller Responded RFQ Filename
-        resFileHash = RFQ[7];// Seller Responded RFQ FileHash
-        resURL = "?name=" +resFileName + "&filehash=" +resFileHash;
-
-        // Seller - Responded Product information services file
-        resProductFileHash = RFQ[9]; 
-        
-        if (resProductFileHash.length > 0) {
-            productDetailsJSON = getJSONObject(params.rfqID,resProductFileHash);
-        }
-
-        var rfqID = parseInt(RFQ[0]);
-        var requestDate = new Date(parseInt(RFQ[1])).toISOString().slice(0,10);
-
-        var data = {
-                      rfqID:rfqID,
-                      requestDate:requestDate,
-                      status:rfqStatusEnum.get(parseInt(RFQ[2])).key,
-                      responseBy:RFQ[3],
-                      responseDt:parseInt(RFQ[4]),
-                      rfqValue:parseInt(RFQ[5]),
-                      resFileName:resFileName,
-                      resURL:resURL,
-                      productDetailsJSON:productDetailsJSON
-                   }
-       if (params.rfqID==parseInt(RFQ[0])) {
-        RFQDetail = data;
-        break;
-       }
-      }
+      resFileName = RFQ[6];// Seller Responded RFQ Filename
+      resFileHash = RFQ[7];// Seller Responded RFQ FileHash
+  
+      resURL = "?name=" +resFileName + "&filehash=" +resFileHash
+      responseDate = new Date(parseInt(RFQ[4])).toISOString().slice(0,10);
     }
+
+    var data = {
+                  rfqID:rfqID,
+                  requestDate:requestDate,
+                  status:rfqStatusEnum.get(parseInt(RFQ[2])).key,
+                  responseBy:RFQ[3],
+                  responseDt:responseDate,
+                  rfqValue:parseInt(RFQ[5]),
+                  resFileName:resFileName,
+                  resURL:resURL,
+                  reqproductDetailsJSON:reqproductDetailsJSON,
+                  resproductDetailsJSON:resproductDetailsJSON
+               }
+    RFQDetail = data;
     return RFQDetail;
   },
 
@@ -234,17 +238,19 @@ Meteor.methods({
       var index = poNumber - 1;
       var poDetails;
       var POList = new Array;
-
       poDetails = POContractInstance.getPurchaseOrderDetailByPOIndex(index);
+ 
       var r_poNumber = parseInt(poDetails[1]);
 
       if (r_poNumber != poNumber) return;
-     
+      var rfqID = parseInt(poDetails[0]);
       var r_poDescription = poDetails[2];
       var r_poReqDate = parseInt(poDetails[3]);
-      var data = {poNumber:r_poNumber,poDescription:r_poDescription,poDate:r_poReqDate};
-      POList.push(data);
-      return POList;
+      var poFileName = poDetails[4];
+      var poFileHash = poDetails[5];
+      var poFileURL = "?name=" +poFileName + "&filehash=" +poFileHash;
+      var data = {rfqID: rfqID,poNumber:r_poNumber,poDescription:r_poDescription,poDate:r_poReqDate,FileName:poFileName,poFileURL:poFileURL};
+      return data;
   },
 
 
@@ -351,7 +357,7 @@ Meteor.methods({
           if(result.blockNumber>block && result.args.isSuccess && result.args.rfqID == rfqID ){
             RFQstatusUpdateEvent.stopWatching();
               console.log("RFQ status update :"+result.args.isSuccess);
-              future.return(parseInt(result.args.isSuccess));
+              future.return(result.args.isSuccess);
           }
         })
       }
@@ -367,11 +373,24 @@ Meteor.methods({
     var rfqID = params.rfqID;
     var description = params.description;
     var poReqDate = new Date().setHours(0,0,0,0);
+    var fileName = params.OriginalFileName;
 
+    var uploadURL = Meteor.settings.server.uploadURL;
+    var data = {fileName:params.OriginalFileName, file: new Buffer(params.File)}
+    var asyncFunc  = Meteor.wrapAsync( HTTP.post );
+
+    var uploadResult = asyncFunc(uploadURL,{
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      content:JSON.stringify(data)
+    }); 
+
+    var poFileHash = uploadResult.content;
 
     // Transaction object
     var transactionObject = {
-      data: RFQContractByteCode, 
+      data: POContractByteCode, 
       from: params.nodeAddress,
       gasPrice: web3.eth.gasPrice,
       gas: const_gas
@@ -391,18 +410,18 @@ Meteor.methods({
     var future = new Future();
     // Sending Transaction
     POContractInstance.createPurchaseOrder.sendTransaction(
-      rfqID,description,poReqDate,transactionObject,function(err,result)
+      rfqID,description,poReqDate,fileName,poFileHash,transactionObject,function(err,result)
     {
       if(err){
         console.log(err);
         future.return(err);
       }
       else{
-        PurchaseOrderCreatedEvent.watch(function(error,result){
-          if(result.blockNumber>block && result.args.isSuccess && result.args.rfqID == rfqID ){
+          PurchaseOrderCreatedEvent.watch(function(error,result){
+          if(result.blockNumber>block && result.args.status && result.args.rfqID == rfqID ){
             PurchaseOrderCreatedEvent.stopWatching();
               console.log("PO Number :"+result.args.status);
-              future.return(parseInt(result.args.status));
+              future.return(parseInt(result.args.ponumber));
           }
         })
       }

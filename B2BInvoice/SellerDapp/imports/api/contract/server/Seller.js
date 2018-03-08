@@ -181,19 +181,33 @@ Meteor.methods({
     for(var index=0;index<RFQCount;index++) {
       
         RFQ = RFQContractInstance.getRFQDetail.call(index);
+
         var rfqID = parseInt(RFQ[0]);
-        var poNumber = parseInt(POContractInstance.getPONumberByrfqID(rfqID));
         var status = rfqStatusEnum.get(parseInt(RFQ[2])).key;
-        var Details = POContractInstance.getInvoiceAndPackageByPO(1);//TODO
+        var PODetail = POContractInstance.getPONumberByrfqID(rfqID);
+        var poNumber = parseInt(PODetail);
+        var invoiceNo = "";
+        var packageID = "";
 
-        var invoiceNo = parseInt(Details[0]);
-        var packageID = parseInt(Details[1]);
-        var shipmentID = parseInt(ShipmentContractInstance.getShipmentIDByPackageID(packageID));
-        
-        var ShippingDetails = ShipmentContractInstance.getShipmentDetail(shipmentID);
+        if (poNumber > 0) {
 
-        var shipmentStatus = shippingStatusEnum.get(parseInt(ShippingDetails[4])).key;
+          var Details = POContractInstance.getInvoiceAndPackageByPO(poNumber);
 
+          if (invoiceNo > 0)
+            invoiceNo = parseInt(Details[0]);
+          
+          if (packageID > 0) {
+              
+            packageID = parseInt(Details[1]);
+            var shipmentID = parseInt(ShipmentContractInstance.getShipmentIDByPackageID(packageID));
+            var ShippingDetails = ShipmentContractInstance.getShipmentDetail(shipmentID);
+            var shipmentStatus = shippingStatusEnum.get(parseInt(ShippingDetails[4])).key;
+          }
+
+        }
+        else {
+          poNumber ="";
+        }
         var data = {rfqID:rfqID,status:status,poNumber:poNumber,invoiceNo:invoiceNo,shipmentID:shipmentID,shipmentStatus:shipmentStatus};
 
       RFQList.push(data);
@@ -233,7 +247,7 @@ Meteor.methods({
     var resURL = ""
     var resproductDetailsJSON = ""
     // Information Populated only when the RFQ Status is - Responded
-    if (rfqStatusEnum.get(parseInt(RFQ[2])).value == rfqStatusEnum.Responded ){
+    if (rfqStatusEnum.get(parseInt(RFQ[2])).value != rfqStatusEnum.Requested ){
 
       if (resProductFileHash.length > 0)
         resproductDetailsJSON = getJSONObject(params.rfqID,resProductFileHash);
@@ -258,6 +272,7 @@ Meteor.methods({
                   resproductDetailsJSON:resproductDetailsJSON
                }
     RFQDetail = data;
+    console.log(RFQDetail)
     return RFQDetail;
   },
 

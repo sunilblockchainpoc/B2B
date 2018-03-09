@@ -11,16 +11,17 @@
                             <thead>
                                 <tr>
                                     <td>Invoice Number</td>
-                                    <td>PO Number</td>
-                                    <td>PO Receipt</td>
-                                    <td>Invoice File</td>
+                                    <td>Issue Date</td>
+                                    <td>Issued By</td>
+                                    <td>Invoice </td>
                                 </tr>
                             </thead>
                             <tbody>
                             {{#with TemplateVar.get 'InvoiceData'}} 
                             <tr>
                                 <td>ITC{{InvoiceNumber}}</td>
-                                <td>PUR{{PONumber}}</td>
+                                <td>{{InvoiceDate}}</td>
+                                <td>{{RequestBy}}</td>
                                 <td>
                                     <a href =""  id={{InvoiceFileURL}} class="invoicefilelink">
                                         {{InvoiceFileName}}

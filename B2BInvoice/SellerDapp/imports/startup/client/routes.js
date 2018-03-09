@@ -13,6 +13,7 @@ import '../../ui/pages/views/RFQ_Details_view.js';
 import '../../ui/pages/views/Invoice_Details_view.js';
 import '../../ui/pages/views/Shipment_Details_view.js';
 import '../../ui/pages/views/Update_Invoice_view.js';
+import '../../ui/pages/views/PurchaseOrder_details.js';
 
 
 import '../../ui/pages/views/login.js';
@@ -80,6 +81,17 @@ FlowRouter.route('/createInvoice', {
   },
 });
 
+FlowRouter.route('/PurchaseOrder/Details/:poNumber', {
+  name: 'App.po.details',
+  triggersEnter: [function(context, redirect) {
+    if(!Session.get("SellerUserName"))
+      redirect('/login');
+  }],
+  action:function(params,queryParams) {
+    //console.log(params)
+    BlazeLayout.render('App_body', { top:'header', main: 'PurchaseOrder_details', footer:'footer' });
+  },
+});
 
 FlowRouter.route('/Invoice/:inv', {
   name: 'App.invoice.details',

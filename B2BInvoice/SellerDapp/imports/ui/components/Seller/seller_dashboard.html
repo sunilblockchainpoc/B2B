@@ -25,10 +25,28 @@
                             <tr>
                                <td><a href="{{pathFor 'App.rfq.details' rfq=(rfqID)}}" id={{rfqID}} class="namelink">RFQ{{rfqID}}</a></td>
                                <td>{{status}}</td>
-                               <td><a href="{{pathFor 'App.updateInvoice' poNumber=(poNumber)}}" id={{poNumber}} class="namelink">PO-{{poNumber}}</a></td>
-                                   <td><a href="{{pathFor 'App.invoice.details' inv=(invoiceNo)}}" id={{invoiceNo}} class="namelink">ITC{{invoiceNo}}</a></td>
-                               <td>{{shipmentStatus}}</td>
-                               <td><a href="{{pathFor 'App.shipping.details' ship=(shipmentID)}}" id={{shipmentID}} class="namelink">FedEx{{shipmentID}}</a></td>
+                              
+                               {{#if poNumber}}
+                               <td><a href="{{pathFor 'App.po.details' poNumber=(poNumber)}}" id={{poNumber}} class="namelink">PO-{{poNumber}}</a></td>
+                                {{else}}
+                                    <td></td>
+                                {{/if}}
+                               
+                               
+                               {{#if invoiceNo}}
+                                    <td><a href="{{pathFor 'App.invoice.details' inv=(invoiceNo)}}" id={{invoiceNo}} class="namelink">ITC{{invoiceNo}}</a></td>
+                                {{else}}
+                                    <td></td>
+                                {{/if}}
+
+                                {{#if shipmentID}}
+                                    <td>{{shipmentStatus}}</td>
+                                    <td><a href="{{pathFor 'App.shipping.details' ship=(shipmentID)}}" id={{shipmentID}} class="namelink">FedEx{{shipmentID}}</a></td>
+                                    {{else}}
+                                    <td></td>
+                                    <td></td>
+                                {{/if}}
+                                    
                             </tr>
                             {{/each}}
                             {{/if}}

@@ -179,31 +179,28 @@ Meteor.methods({
   if(RFQCount > 0) {
 
     for(var index=0;index<RFQCount;index++) {
-      
         RFQ = RFQContractInstance.getRFQDetail.call(index);
-
         var rfqID = parseInt(RFQ[0]);
         var status = rfqStatusEnum.get(parseInt(RFQ[2])).key;
         var PODetail = POContractInstance.getPONumberByrfqID(rfqID);
         var poNumber = parseInt(PODetail);
         var invoiceNo = "";
-        var packageID = "";
-
+        var packageNo = "";
+        var shipmentStatus = "";
+        var shipmentID = ""
         if (poNumber > 0) {
 
           var Details = POContractInstance.getInvoiceAndPackageByPO(poNumber);
-
-          if (invoiceNo > 0)
-            invoiceNo = parseInt(Details[0]);
+          console.log(Details)
+          var invoiceID = parseInt(Details[0])
           
-          if (packageID > 0) {
-              
-            packageID = parseInt(Details[1]);
-            var shipmentID = parseInt(ShipmentContractInstance.getShipmentIDByPackageID(packageID));
+          if (invoiceID > 0) {
+            invoiceNo = invoiceID;
+            packageNo = parseInt(Details[1]);
+            shipmentID = parseInt(ShipmentContractInstance.getShipmentIDByPackageID(packageNo));
             var ShippingDetails = ShipmentContractInstance.getShipmentDetail(shipmentID);
-            var shipmentStatus = shippingStatusEnum.get(parseInt(ShippingDetails[4])).key;
+            shipmentStatus = shippingStatusEnum.get(parseInt(ShippingDetails[4])).key;
           }
-
         }
         else {
           poNumber ="";
@@ -214,7 +211,6 @@ Meteor.methods({
     }
   }
   return RFQList;
- 
 },
 
   // This method captures complete RFQ details for the given RFQ ID
@@ -282,54 +278,58 @@ Meteor.methods({
     (uint rfqID, string description,uint poReqDate) {
   */
 
- "getPODetailByPONumber": function(params){ 
+  "getPODetailByPONumber": function(params){ 
 
-      var poNumber = params.poNumber;
-      var index = poNumber - 1;
-      var poDetails;
-      var POList = new Array;
+    var poNumber = params.poNumber;
+    var index = poNumber - 1;
+    var poDetails;
+    var POList = new Array;
+    poDetails = POContractInstance.getPurchaseOrderDetailByPOIndex(index);
 
-      poDetails = POContractInstance.getPurchaseOrderDetailByPOIndex(index);
-      var r_poNumber = parseInt(poDetails[1]);
+    var r_poNumber = parseInt(poDetails[1]);
 
-      if (r_poNumber != poNumber) return;
-     
-      var r_poDescription = poDetails[2];
-      var r_poReqDate = parseInt(poDetails[3]);
-      var data = {poNumber:r_poNumber,poDescription:r_poDescription,poDate:r_poReqDate};
-      POList.push(data);
-      return POList;
-  },
+    if (r_poNumber != poNumber) return;
+    var rfqID = parseInt(poDetails[0]);
+    var r_poDescription = poDetails[2];
+    var r_poReqDate = parseInt(poDetails[3]);
+    var poFileName = poDetails[4];
+    var poFileHash = poDetails[5];
+    var poFileURL = "?name=" +poFileName + "&filehash=" +poFileHash;
+    var data = {rfqID: rfqID,poNumber:r_poNumber,poDescription:r_poDescription,poDate:r_poReqDate,FileName:poFileName,poFileURL:poFileURL};
+    return data;
+},
 
+/* function getInvoiceDetailsByInvoiceIndex(uint invoiceIndex) view public returns 
+  (uint poNumber, uint invoiceNumber, string invoiceReceiptFileName, string invoiceReceiptFileHash, 
+  uint invoiceDate, string requestBy) {*/
 
-
-  //function getInvoiceDetailsByInvoiceIndex(uint invoiceIndex) view public returns 
-  //(uint poNumber, uint invoiceNumber, uint packageID, string invoiceReceiptFileName, 
-  //string invoiceReceiptFileHash, string packageSlipFileName, string packageSlipFileHash) {
-
-  "getInvoiceDetailByInvoiceNumber": function(params){ 
+   "getInvoiceDetailByInvoiceNumber": function(params){ 
 
     var invoiceNumber = params.invoiceNumber;
-    var index = invoiceNumber - 1000000 - 1;
+    var index = invoiceNumber - 1;
+    console.log(index)
+
     var invoiceDetails = POContractInstance.getInvoiceDetailsByInvoiceIndex(index);
     var InvoiceList;
+    console.log(invoiceDetails)
+
     var r_invoiceNumber = parseInt(invoiceDetails[1]);
     
     if (r_invoiceNumber != invoiceNumber) 
       return;
     
     var poNumber = parseInt(invoiceDetails[0]);
-    var invoiceFileName = invoiceDetails[3];
-    var invoiceFileHash = invoiceDetails[4];
+    var invoiceFileName = invoiceDetails[2];
+    var invoiceFileHash = invoiceDetails[3];
+    var invoiceDate = invoiceDetails[4];
+    var requestBy = invoiceDetails[5];
 
     var invoiceURL = "?name=" +invoiceFileName + "&filehash=" +invoiceFileHash;
-    var data = {poNumber:poNumber,invoiceNumber:r_invoiceNumber,invoiceFileName:invoiceFileName,invoiceURL:invoiceURL};
+    var data = {poNumber:poNumber,invoiceNumber:r_invoiceNumber,invoiceFileName:invoiceFileName,invoiceURL:invoiceURL,invoiceDate:invoiceDate,requestBy:requestBy};
     
     InvoiceList = data;
-
     return InvoiceList;
   },
-
 
   /*    
       function getShipmentDetail(uint shipmentID) view public returns 
@@ -385,7 +385,9 @@ Meteor.methods({
       var packageSlipFileName = params.packageFilename;
       var username = params.username;
       var address = params.address;
-
+      var responseBy = params.ResponseBy;
+      var responseDt = new Date().setHours(0,0,0,0);
+  
       /****************** Uploading Invoice file to IPFS  ***************************************************/
       var invoiceFiledata = {fileName:params.invoiceFilename, file: new Buffer(params.invoiceFiledata)}
       
@@ -398,7 +400,6 @@ Meteor.methods({
   
       // Invoice Filehash from IPFS
       var invoiceFileHash = invoiceResult.content;
-
 
       /****************** Uploading Package file to IPFS  ***************************************************/
 
@@ -427,43 +428,143 @@ Meteor.methods({
       // event InvoiceCreated(uint ponumber,uint invoiceNumber,uint packageID,bool status);
 
       var InvoiceCreatedEvent = POContractInstance.InvoiceCreated();
-      var block = web3.eth.getBlock('latest').number;
+      var before_invoice_block = web3.eth.getBlock('latest').number;
+      console.log("block="+before_invoice_block)
       var future = new Future();
 
-      // Sending Transaction
-      POContractInstance.createInvoice.sendTransaction(
-                                                         ShipmentContractAddr,
-                                                         packageDescription,
+      /* function createInvoice(uint invoiceDate,string reqBy,uint poNumber
+      ,string invoiceReceiptFileName,string invoiceReceiptFileHash) onlySeller public { */
+
+      // Sending Invoice Creation Transaction
+
+      /********************************** Start Invoice Creation *************************************************** */
+      
+      POContractInstance.createInvoice.sendTransaction(  responseDt,
+                                                         responseBy,
                                                          poNumber,
                                                          invoiceFileName,
                                                          invoiceFileHash,
-                                                         packageSlipFileName,
-                                                         packageFileHash,
                                         transactionObject,function(err,result) {
       if(err){
           console.log(err);
           future.return(err);
       }
       else {
-                console.log("Invoice Event watch started ...")
+              console.log("***********   Invoice Event watch started *****************")
+              
+              InvoiceCreatedEvent.watch(function(error,result){
 
-                InvoiceCreatedEvent.watch(function(error,result){
-               
-                  console.log("Invoice Event watch ended ...")
-                
-                  if(result.blockNumber>block && result.args.status && result.args.ponumber == poNumber ) {
-                      // Stop watching
-                      InvoiceCreatedEvent.stopWatching();
-                      console.log("Invoice Number : "+result.args.invoiceNumber);
-                      console.log("Package Number : "+result.args.packageID);
-                      future.return(parseInt(result.args.status));
-                
+              console.log("result.blockNumber="+result.blockNumber+",before_invoice_block="+before_invoice_block)
+              console.log("result.args.status="+result.args.status)
+              console.log("result.args.ponumber="+result.args.ponumber+",poNumber="+poNumber)
+              console.log("Invoice Number : "+result.args.invoiceNumber);
+
+              console.log("***********   Invoice Event watch Ended *****************")
+
+                     if(result.blockNumber>before_invoice_block && result.args.status && result.args.ponumber == poNumber ) {
+                        // Stop watching
+                        InvoiceCreatedEvent.stopWatching();
+
+                        var PackageSlipCreatedEvent = POContractInstance.PackageSlipCreated();
+                        var block = web3.eth.getBlock('latest').number;
+                        // Succes - Send another transaction.
+
+      /********************************** Start Package Slip Creation *************************************************** */
+
+
+                        POContractInstance.createPackageSlip.sendTransaction(responseDt,
+                                                                           responseBy,
+                                                                           packageDescription,
+                                                                           poNumber,
+                                                                           packageSlipFileName,
+                                                                           packageFileHash,
+                                                  transactionObject,function(err1,result1) {
+                        if(err1){
+                          console.log(err);
+                          future.return(err1);
+                        }
+                        else {
+                          console.log("\n\n***********   PackageSlip Event watch started *****************")
+
+                          PackageSlipCreatedEvent.watch(function(error2,result2){
+
+                            console.log("result2.blockNumber="+result2.blockNumber+",block="+block)
+                            console.log("result2.args.status="+result2.args.status)
+                            console.log("result2.args.ponumber="+result2.args.ponumber+",poNumber="+poNumber)
+                            console.log("PackageSlip Number : "+result2.args.packageID);
+
+
+                            console.log("***********   PackageSlip Event watch Ended *****************")
+
+                                  if(result2.blockNumber>block && result2.args.status && result2.args.ponumber == poNumber ) {
+                                  // Stop watching
+                                    PackageSlipCreatedEvent.stopWatching();
+
+          /********************************** Start Shipping Request *************************************************** */
+          // function requestForShipment(uint packageID,string shipmentDescription, uint shipmentStatusDate,string shipmentStatusBy)  onlySeller public {
+
+                    ShipmentContractInstance.requestForShipment.sendTransaction(result2.args.packageID,
+                                                                         packageDescription,
+                                                                         responseDt,
+                                                                         responseBy,
+                                                                         transactionObject,function(err3,result3) {
+
+                      if(err3){
+                        console.log(err3);
+                        future.return(err3);
+                      }
+                      else {
+                                  var ShipmentRequestedEvent = ShipmentContractInstance.ShipmentRequested();
+                                  var block = web3.eth.getBlock('latest').number;
+  
+                                  console.log("\n\n***********   ShipmentRequested Event watch started *****************")
+                                  ShipmentRequestedEvent.watch(function(error4,result4){
+
+                                  console.log("result4.blockNumber="+result4.blockNumber+",block="+block)
+                                  console.log("result4.args.status="+result4.args.status)
+                                  console.log("shipmentID ="+result4.args.shipmentID);
+
+                                  console.log("***********   ShipmentRequested Event watch Ended *****************")
+
+                                  ShipmentRequestedEvent.stopWatching();
+                                  // event ShipmentRequested(uint packageID,uint shipmentID,bool status);
+  
+                                  if(result4.blockNumber>block && result4.args.status) {
+  
+                                    result4.args.shipmentID
+                                    future.return(result.args.status);
+  
+                                  }
+                                  else {
+                                    future.return(result.args.status);
+                                  }
+                              });
+                      }
+                    });
+
+        /********************************** End Shipping Request *************************************************** */
+                                   }
+                                  else {
+                                    // PackageSlip Event result - Failed
+                                    future.return(false);
+                                  }
+                          });
+                        }
+                      });
+        /********************************** End of Package Slip Creation *************************************************** */
+                     
+                    }
+                    else {
+                      // Invoice Event result - Failed
+                      future.return(false);
                   }
-            })
-        }
+              });
+            }
+        /********************************** End of  Invoice Creation *************************************************** */
+            
       });
       return future.wait();
-    },
+}
 });
 
 function getJSONObject (name,filehash)

@@ -12,14 +12,14 @@ Template['components_invoice_details'].onRendered(function(){
     var params = {invoiceNumber:parseInt(invoiceNo.get())};
 	var template = this;
     TemplateVar.set(template,'InvoiceData', {});
-
+    console.log(params)
     Meteor.call('getInvoiceDetailByInvoiceNumber',params,function(error,result){
-        
-        if (result) {
 
+        if (result) {
             TemplateVar.set(template,'InvoiceData', 
-                                {PONumber           : result.poNumber,
-                                 InvoiceNumber      : result.invoiceNumber,
+                                {InvoiceNumber      : result.invoiceNumber,
+                                 InvoiceDate        : result.invoiceDate,
+                                 RequestBy          : result.requestBy,
                                  InvoiceFileName    : result.invoiceFileName,
                                  InvoiceFileURL     : result.invoiceURL,
                                 });

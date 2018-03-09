@@ -39,7 +39,7 @@
                     <label for="poNumber" class="col-sm-4 control-label">Select the PO Number</label>
                     <div class="col-xs-2">
                         <select class="form-control" id="poNumber"> 
-                        {{#each PONumbers}}
+                        {{#each getPOs}}
                             <option value={{poNumber}}>{{poNumber}}</option>
                             {{/each}}
                         </select>

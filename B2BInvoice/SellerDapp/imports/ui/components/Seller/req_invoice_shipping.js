@@ -16,8 +16,7 @@ Template['components_invoice_shipping'].onRendered(function(){
 				for(var i=0;i<result.length;i++)
 				{
                     if (result[i].poNumber!="") {
-                        data = {index:result[i].poNumber - 1, id:result[i].poNumber};
-                        console.log(data);
+                        data = {index:result[i].poNumber - 1, poNumber:result[i].poNumber};
                         PONumbers.push(data);
                     }
 				}
@@ -52,8 +51,7 @@ Template['components_invoice_shipping'].events({
         template.find("#Generate").disabled=true;
 
         // Get all the input params
-        var poNumber =  new ReactiveVar(FlowRouter.getParam("poNumber"));
-        //template.find("#ponumber").value; TODO
+        var poNumber =  template.find("#poNumber").value;
         var packageDesc  = template.find("#packageDesc").value;
         var shippingAddr = template.find("#shippingAddr").value;
 		var username = Session.get("SellerUserName");
@@ -99,7 +97,6 @@ Template['components_invoice_shipping'].events({
                         }
                     }
                     template.find("#Generate").disabled=false;
-                    
             });
         }         
         packageReader.readAsArrayBuffer(template.find("#packageFile").files[0]);

@@ -3,65 +3,46 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { ReactiveVar } from 'meteor/reactive-var';
 
+
+var PONumbers = new ReactiveArray(); 
+
+Template['components_invoice_shipping'].onRendered(function(){
+	
+	PONumbers.clear();
+	Meteor.call('getSellerDashBoardDetails',function(error,result){
+		if (result) {
+            var data;
+			if(result.length >0){
+				for(var i=0;i<result.length;i++)
+				{
+                    if (result[i].poNumber!="") {
+                        data = {index:result[i].poNumber - 1, id:result[i].poNumber};
+                        console.log(data);
+                        PONumbers.push(data);
+                    }
+				}
+			}
+		}
+	});
+
+});
+
+
+Template['components_invoice_shipping'].helpers({
+	"getPOs" : function(){
+	 return PONumbers.list();
+	},
+});
+
+
+
 // This method is rendered on click of RFQ ID
 Template['components_invoice_shipping'].onRendered(function(){
     
-    rfqId = new ReactiveVar(FlowRouter.getParam("rfq"));
-
-	var template = this;
-    TemplateVar.set(template,'rfqData', {});
-
-    var params = {rfqID:parseInt(rfqId.get())};
-    Meteor.call('getRFQDetailByrfqID',params,function(error,result){
-        
-        if (result) {
-    
-            TemplateVar.set(template,'rfqData', 
-                                {rfqID: result.rfqID,
-                                 requestDate : result.requestDate,
-                                 responseBy : result.responseBy,
-                                 responseDt : result.responseDt,
-                                 rfqValue : result.rfqValue
-                                });
-
-        // Get the Product details provided by Buyer
-        var reqproductDetailsJSON = result.reqproductDetailsJSON;
-        var resproductDetailsJSON = result.resproductDetailsJSON;
-        if (resproductDetailsJSON.length > 0) {
-
-            for(var i=0;i<resproductDetailsJSON.length; i++) {
-
-                var textId = resproductDetailsJSON[i].id + "_value";
-                var textvalue = parseInt(resproductDetailsJSON[i].textvalue);
-                var costID = resproductDetailsJSON[i].id + "_cost";
-
-                // Disable the fields as the RFQ is already responded
-                template.find(resproductDetailsJSON[i].id).checked = true;
-                template.find(resproductDetailsJSON[i].id).disabled = true;
-                template.find("#rfqAmount").disabled = true;
-                template.find("#respondRFQ").disabled = true;
-                template.find(costID).disabled = true;
-
-                // Populate values
-                template.find("#rfqAmount").value = result.rfqValue;
-                template.find(textId).value = textvalue;
-                template.find(costID).value = parseInt(resproductDetailsJSON[i].cost);
-            }
-        }
-        else if(reqproductDetailsJSON.length > 0){ // Product details sent by Buyer
-            // Look for individual products
-            for(var i=0;i<reqproductDetailsJSON.length; i++) {
-
-                var textId = reqproductDetailsJSON[i].id + "_value";
-                var textvalue = parseInt(reqproductDetailsJSON[i].textvalue);
-
-                template.find(reqproductDetailsJSON[i].id).checked = true;
-                template.find(reqproductDetailsJSON[i].id).disabled = true;
-                template.find(textId).value = textvalue;
-            }
-        }
-        }
-    });
+    poNumber =  new ReactiveVar(FlowRouter.getParam("poNumber"));
+    var po_number = parseInt(poNumber.get());
+    var template = this;
+    TemplateVar.set(template,'poData', {poNumber:po_number});
 });
 
 Template['components_invoice_shipping'].events({
@@ -71,7 +52,8 @@ Template['components_invoice_shipping'].events({
         template.find("#Generate").disabled=true;
 
         // Get all the input params
-        var poNumber     = 1//template.find("#ponumber").value; TODO
+        var poNumber =  new ReactiveVar(FlowRouter.getParam("poNumber"));
+        //template.find("#ponumber").value; TODO
         var packageDesc  = template.find("#packageDesc").value;
         var shippingAddr = template.find("#shippingAddr").value;
 		var username = Session.get("SellerUserName");

@@ -12,6 +12,8 @@ import '../../ui/pages/views/Admin_view.js';
 import '../../ui/pages/views/RFQ_Details_view.js';
 import '../../ui/pages/views/Invoice_Details_view.js';
 import '../../ui/pages/views/Shipment_Details_view.js';
+import '../../ui/pages/views/Update_Invoice_view.js';
+
 
 import '../../ui/pages/views/login.js';
 
@@ -67,6 +69,18 @@ FlowRouter.route('/RFQ/:rfq', {
   },
 });
 
+FlowRouter.route('/createInvoice', {
+  name: 'App.updateInvoice',
+  triggersEnter: [function(context, redirect) {
+    if(!Session.get("SellerUserName"))
+      redirect('/login');
+  }],
+  action:function(params,queryParams) {
+      BlazeLayout.render('App_body', { top:'header', main: 'Update_Invoice_view',footer:'footer'});  
+  },
+});
+
+
 FlowRouter.route('/Invoice/:inv', {
   name: 'App.invoice.details',
   triggersEnter: [function(context, redirect) {
@@ -88,9 +102,6 @@ FlowRouter.route('/Shipment/:ship', {
       BlazeLayout.render('App_body', { top:'header', main: 'Shipment_Details_view',footer:'footer'});  
   },
 });
-
-
-
 
 
 FlowRouter.route('/logout', {

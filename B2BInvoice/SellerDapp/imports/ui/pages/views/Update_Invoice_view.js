@@ -10,15 +10,14 @@ The view1 template
 @class [template] views_view1
 @constructor
 */
-import './Seller_view.html';
-import '../../components/Seller/seller_dashboard.js';
+import './Update_Invoice_view.html';
 import '../../components/Seller/req_invoice_shipping.js';
 
 
 var poNumber = new ReactiveVar();
 
 
-Template['Seller_view'].helpers({
+Template['Update_Invoice_view'].helpers({
     /**
     Get the name
 
@@ -31,7 +30,7 @@ Template['Seller_view'].helpers({
 });
 
 // When the template is created
-Template['Seller_view'].onCreated(function(){
+Template['Update_Invoice_view'].onCreated(function(){
 
 	//Meta.setSuffix(TAPi18n.__("dapp.view1.title"));poNumber
 });

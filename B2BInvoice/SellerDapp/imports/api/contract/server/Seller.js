@@ -191,7 +191,7 @@ Meteor.methods({
         if (poNumber > 0) {
 
           var Details = POContractInstance.getInvoiceAndPackageByPO(poNumber);
-          console.log(Details)
+          console.log("***"+Details)
           var invoiceID = parseInt(Details[0])
           
           if (invoiceID > 0) {
@@ -321,7 +321,7 @@ Meteor.methods({
     var poNumber = parseInt(invoiceDetails[0]);
     var invoiceFileName = invoiceDetails[2];
     var invoiceFileHash = invoiceDetails[3];
-    var invoiceDate = invoiceDetails[4];
+    var invoiceDate  = new Date(parseInt(invoiceDetails[4])).toISOString().slice(0,10);
     var requestBy = invoiceDetails[5];
 
     var invoiceURL = "?name=" +invoiceFileName + "&filehash=" +invoiceFileHash;

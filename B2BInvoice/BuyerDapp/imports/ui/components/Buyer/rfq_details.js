@@ -102,8 +102,10 @@ Template['components_rfq_details'].events({
 	"click #updateRFQStatus": function(event, template){ 
 		//template.find("#updateRFQStatus").disabled=true;
     	var username = Session.get("BuyerUserName");
-	    var address = Session.get("BuyerUserAddress");
-        var data = {rfqID:parseInt(rfqId.get()),status:rfqStatus,nodeAddress:address};
+        var address = Session.get("BuyerUserAddress");
+        var rfqAmount = Session.get("rfqValue");
+
+        var data = {rfqID:parseInt(rfqId.get()),status:rfqStatus,nodeAddress:address,rfqAmount:rfqAmount};
 	    TemplateVar.set(template,'state', {isMining: true});
 	    Meteor.call('acceptOrDeclineQuote',data,function(error,result){
     	if (!error) 

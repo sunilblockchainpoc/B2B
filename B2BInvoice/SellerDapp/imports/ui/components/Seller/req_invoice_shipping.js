@@ -53,7 +53,8 @@ Template['components_invoice_shipping'].events({
         // Get all the input params
         var poNumber =  template.find("#poNumber").value;
         var packageDesc  = template.find("#packageDesc").value;
-        var shippingAddr = template.find("#shippingAddr").value;
+        var invoiceAmt  = template.find("#invoiceAmt").value;
+        //var shippingAddr = template.find("#shippingAddr").value;
 		var username = Session.get("SellerUserName");
         var address = Session.get("SellerUserAddress");
 
@@ -78,6 +79,7 @@ Template['components_invoice_shipping'].events({
             // Populate the data for contract
             var data = {poNumber:poNumber,
                         packageDesc:packageDesc,
+                        invoiceAmt:invoiceAmt,
                         invoiceFilename:invoiceFilename, 
                         invoiceFiledata:invoiceFiledata,
                         packageFilename:packageFilename, 

@@ -1,0 +1,99 @@
+<template name="components_shipment_details">
+    <div class="panel panel-default panel-dapp">
+        <div class="panel-heading">
+            Shipment Details
+        </div>
+        <div class="panel-body">
+
+                {{#with TemplateVar.get 'state'}}
+                {{#if isError}}
+                    <div class="alert alert-warning">
+                        Error updating the shipment details. The error was "{{error}}"
+                    </div>
+                {{/if}}
+            
+                {{#if isMining}}
+                    <div class="alert alert-info">
+                        Shipment Details update is in progress...
+                        <span class="badge text-right">
+                            <i class="fa fa-cog fa-spin"></i>
+                        </span>
+                    </div>
+                {{/if}}
+            
+                {{#if isMined}}
+                {{#if isUpdated }}
+                    <div class="alert alert-info">
+                        The Shipment details have been updated successfully!!
+                    </div>
+                    <hr />
+                    <br />
+                
+                {{else}}    
+
+                    <div class="alert alert-warning">
+                        Error updating the shipment details. The error was "{{error}}"
+                    </div>
+                    <hr />
+                    <br />
+            	{{/if}}
+                   {{/if}} 
+            {{/with}} 
+ 
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal">
+                    {{#with TemplateVar.get 'shipmentData'}} 
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Shipment Id:</label>
+                            <div class="col-sm-3">{{shipmentId}}</div>
+                        </div>
+
+                        <div class="form-group">
+                                <label class="col-sm-4 control-label">Description:</label>
+                                <div class="col-sm-5"> {{shipmentDescription}}
+                                    <!--input type="text"  id="ship_description" class="form-control" value={{shipmentDescription}} /> -->
+                                </div>
+                        </div>
+                        <div class="form-group">
+                                <label class="col-sm-4 control-label">Shipment Date:</label>
+                                <div class="col-sm-2"> {{shipmentDate}}
+                                <!--<input type="date"  id="shipment_date" class="form-control" value={{shipmentDate}} /> -->
+                                </div>
+                        </div>
+                            
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Status:</label>
+                            <div class="col-sm-3">{{shipmentStatus}}</div>
+                        </div>
+
+                        <div class="form-group">
+                                <label class="col-sm-4 control-label">Shipping Cost</label>
+                                <div class="col-sm-2"> {{shipmentCost}}
+                                <!--<input type="text"  id="shipment_cost" class="form-control" value={{shipmentCost}} /> -->
+                                </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Acknowledge Delivery</label>
+                            <div class="col-sm-6">
+                            <input type="radio" name="shipStatus" id="shipStatus5" value="5"> Accept
+                            <input type="radio" name="shipStatus" id="shipStatus3" value="3"> Decline
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-5">
+                                <button type="button" id="btnUpdShipmentStatus" style="position: relative;top: 10px;left: 72%;" class="btn btn-sm bg-all"> Update
+                                </button>
+                            </div>
+                        </div>                  
+                    {{/with}} 
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+

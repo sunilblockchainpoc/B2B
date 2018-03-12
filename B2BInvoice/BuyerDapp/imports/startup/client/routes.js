@@ -12,7 +12,9 @@ import '../../ui/pages/views/Admin_view.js';
 import '../../ui/pages/views/RFQ_Details_view.js';
 import '../../ui/pages/views/PurchaseOrder_Create.js';
 import '../../ui/pages/views/PurchaseOrder_details.js';
+import '../../ui/pages/views/Invoice_Details_view.js';
 import '../../ui/pages/views/login.js';
+import '../../ui/pages/views/Shipment_Details_view.js';
 
 // Set up all routes in the app
 
@@ -49,6 +51,8 @@ FlowRouter.route('/', {
 FlowRouter.route('/order', {
   name: 'App.order',
   triggersEnter: [function(context, redirect) {
+    if(!Session.get("BuyerUserName"))
+    redirect('/login');
   }],
   action() {
     BlazeLayout.render('App_body', { top:'header', main: 'Buyer_view', footer:'footer' });
@@ -62,7 +66,6 @@ FlowRouter.route('/Request/:rfq', {
       redirect('/login');
   }],
   action:function(params,queryParams) {
-    console.log(params)
       BlazeLayout.render('App_body', { top:'header', main: 'RFQ_Details_view',footer:'footer'});  
   },
 });
@@ -87,6 +90,28 @@ FlowRouter.route('/PurchaseOrder/Details/:poNumber', {
   action:function(params,queryParams) {
     //console.log(params)
     BlazeLayout.render('App_body', { top:'header', main: 'PurchaseOrder_details', footer:'footer' });
+  },
+});
+
+FlowRouter.route('/Invoice/:inv', {
+  name: 'App.invoice.details',
+  triggersEnter: [function(context, redirect) {
+    if(!Session.get("BuyerUserName"))
+      redirect('/login');
+  }],
+  action:function(params,queryParams) {
+      BlazeLayout.render('App_body', { top:'header', main: 'Invoice_Details_view',footer:'footer'});  
+  },
+});
+
+FlowRouter.route('/Shipment/:ship', {
+  name: 'App.shipment.details',
+  triggersEnter: [function(context, redirect) {
+    if(!Session.get("BuyerUserName"))
+    redirect('/login');
+  }],
+  action:function (params,queryParams) {
+    BlazeLayout.render('App_body', { top:'header', main: 'Shipment_Details_view', footer:'footer' });
   },
 });
 

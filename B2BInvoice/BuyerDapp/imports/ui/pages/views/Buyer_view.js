@@ -13,6 +13,8 @@ The view1 template
 import './Buyer_view.html';
 import '../../components/Buyer/buyer_dashboard.js';
 import '../../components/Buyer/buyer_rfq.js';
+import '../../components/Buyer/buyer_accounts.js';
+
 
 Template['Buyer_view'].helpers({
     /**

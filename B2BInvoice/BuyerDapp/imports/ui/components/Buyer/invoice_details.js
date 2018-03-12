@@ -38,7 +38,25 @@ Template['components_invoice_details'].events({
       getData(data,text);
   },
 
+  "click #btnSendAmount": function(event, template){ 
+		
+    TemplateVar.set(template,'state', {isMining: true});
+    var data = TemplateVar.get('InvoiceData');
+    var data = {invoiceNumber:data.InvoiceNumber,
+                invoiceAmount:data.InvoiceAmount,
+                nodeAddress: Session.get("BuyerUserAddress")}
+    
+    Meteor.call('payInvoiceAmountToContract',data,function(error, result){
 
+            if (!error)	{
+                template.find("#btnCreatePO").disabled=false;
+
+                return TemplateVar.set(template,'state',{isMined: true, poNumber:result});
+            }
+            template.find("#btnCreatePO").disabled=false;
+            
+        });
+    }
 });
 
 // This utility function is used to download the file from IPFS to local storage

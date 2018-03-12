@@ -10,7 +10,7 @@ var Enum = require('enum');
 var request  = require("request");
 
 var rfqStatusEnum = new Enum({'Requested': 0, 'Responded': 1, 'Accepted': 2, 'Declined':3});
-var shippingStatusEnum = new Enum({'Unknown': 0, 'Received': 1, 'Shipped': 2, 'Failed':3,'Delivered':4,'Acknowledged':5});
+var shippingStatusEnum = new Enum({'Requested': 0, 'Received': 1, 'Shipped': 2, 'Failed':3,'Delivered':4,'Acknowledged':5});
 
 if (typeof web3 !== 'undefined') {
   web3 = new Web3(web3.currentProvider);
@@ -165,6 +165,8 @@ Meteor.methods({
   return RFQList;
 },
 
+
+
   // This method captures complete RFQ details for the given RFQ ID
   /* Contract method - 
    function getRFQDetail(uint rfqIndex) public view returns(uint rfqId,uint requestDt,   
@@ -198,7 +200,7 @@ Meteor.methods({
     var resURL = ""
     var resproductDetailsJSON = ""
     // Information Populated only when the RFQ Status is - Responded
-    if (rfqStatusEnum.get(parseInt(RFQ[2])).value == rfqStatusEnum.Responded ){
+    if (rfqStatusEnum.get(parseInt(RFQ[2])).value != rfqStatusEnum.Requested ){
 
       if (resProductFileHash.length > 0)
         resproductDetailsJSON = getJSONObject(params.rfqID,resProductFileHash);
@@ -225,6 +227,21 @@ Meteor.methods({
     RFQDetail = data;
     return RFQDetail;
   },
+
+
+  /************************************************************************************************** 
+    Get Account Balance
+   ***************************************************************************************************/   
+  "getBalance":function(params) {
+    var accountInfo = new Array;
+    //console.log(params);
+    var result = web3.eth.getBalance(params.address);
+    bal = web3.fromWei(result,"ether");
+    data = { account_number:params.address, balance:parseInt(bal)}
+    console.log(data)
+    return data;
+},
+
 
   // This method captures PO details for the given PO Number
   /* Contract method - 
@@ -259,63 +276,75 @@ Meteor.methods({
   //(uint poNumber, uint invoiceNumber, uint packageID, string invoiceReceiptFileName, 
   //string invoiceReceiptFileHash, string packageSlipFileName, string packageSlipFileHash) {
 
-  "getInvoiceDetailByInvoiceNumber": function(params){ 
+    "getInvoiceDetailByInvoiceNumber": function(params){ 
 
-    var invoiceNumber = params.invoiceNumber;
-    var index = invoiceNumber - 1000000;
-    var invoiceDetails;
-    var InvoiceList = new Array;
-
-    invoiceDetails = POContractInstance.getInvoiceDetailsByInvoiceIndex(index);
-    var r_invoiceNumber = parseInt(invoiceDetails[1]);
-    
-    if (r_invoiceNumber != invoiceNumber) 
-      return;
-    
-    var invoiceFileName = invoiceDetails[3];
-    var invoiceFileHash = invoiceDetails[4];
-    var invoiceURL = "?name=" +invoiceFileName + "&filehash=" +invoiceFileHash;
-
-    var data = {invoiceNumber:r_invoiceNumber,invoiceFileName:invoiceFileName,invoiceURL:invoiceURL};
-    InvoiceList.push(data);
-    
-    return InvoiceList;
-  },
-
+      var invoiceNumber = params.invoiceNumber;
+      var index = invoiceNumber - 1;
+  
+      var invoiceDetails = POContractInstance.getInvoiceDetailsByInvoiceIndex(index);
+      var InvoiceList;
+  
+      var r_invoiceNumber = parseInt(invoiceDetails[1]);
+      
+      if (r_invoiceNumber != invoiceNumber) 
+        return;
+      
+      var poNumber = parseInt(invoiceDetails[0]);
+      var invoiceAmount = parseInt(invoiceDetails[2]);
+      var invoiceFileName = invoiceDetails[3];
+      var invoiceFileHash = invoiceDetails[4];
+      var invoiceDate  = new Date(parseInt(invoiceDetails[5])).toISOString().slice(0,10);
+      var requestBy = invoiceDetails[6];
+  
+      var invoiceURL = "?name=" +invoiceFileName + "&filehash=" +invoiceFileHash;
+      var data = {poNumber:poNumber,invoiceNumber:r_invoiceNumber,invoiceAmount:invoiceAmount,invoiceFileName:invoiceFileName,invoiceURL:invoiceURL,invoiceDate:invoiceDate,requestBy:requestBy};
+      
+      InvoiceList = data;
+      return InvoiceList;
+    },
 
   /*    
       function getShipmentDetail(uint shipmentID) view public returns 
       (uint shipmentNo,uint packageID,string shipmentDescription,uint shipmentDate,ShipmentStatus status,
         string shipmentReceiptFileName,string shipmentReceiptFileHash) {
     */
-  "getShippingDetailByShipmentID": function(params){ 
+   "getShipmentDetail": function(params){ 
 
     var shipmentID = params.shipmentID;
-    var index = shipmentID - 1;
-    var shippingDetails;
-    var ShippingList = new Array;
+    //var index = shipmentID - 1;
+    var shippingDetails,additionalDetails;
+    var shipmentStatusDate;
+    var shipmentStatusBy;
+    var shipmentFileName;
+    var shipmentFileHash;
+    var shippingURL;
+    
+    shippingDetails = ShipmentContractInstance.getShipmentDetail(shipmentID);
 
-    shippingDetails = ShipmentContractInstance.getShipmentDetail(index);
-    var r_shipmentNo = parseInt(invoiceDetails[1]);
-    
-    if (r_shipmentNo != shipmentID) 
-      return;
-    
+    var r_shipmentNo = parseInt(shippingDetails[0]);
+    var packageID = parseInt(shippingDetails[1]);
     var shipmentDescription = shippingDetails[2];
-    var shipmentDate = shippingDetails[3];
+    
+    var shipmentDate = new Date(parseInt(shippingDetails[3])).toISOString().slice(0,10);
     var shippingStatus = shippingStatusEnum.get(parseInt(shippingDetails[4])).key;
 
-    var shipmentFileName = shippingDetails[5];
-    var shipmentFileHash = shippingDetails[6];
+    var shippingCost = parseInt(shippingDetails[5]);
+ 
+    additionalDetails = ShipmentContractInstance.getShipmentAdditionalDetail(shipmentID );
 
-    var shippingURL = "?name=" +shipmentFileName + "&filehash=" +shipmentFileHash;
-
+    additionalShipmentNo = parseInt(additionalDetails[0]);
+    if(r_shipmentNo==additionalShipmentNo) {
+      shipmentStatusDate = new Date(parseInt(additionalDetails[1])).toISOString().slice(0,10);
+      shipmentStatusBy = additionalDetails[2];
+      shipmentFileName = additionalDetails[3];
+      shipmentFileHash = additionalDetails[4];
+      shippingURL = "?name=" +shipmentFileName + "&filehash=" +shipmentFileHash;//TODO
+    }
+  
     var data = {shipmentID:r_shipmentNo,shipmentDescription:shipmentDescription,shipmentDate:shipmentDate,
-                shippingStatus:shippingStatus,shipmentFileName:shipmentFileName,shippingURL:shippingURL};
+                shippingStatus:shippingStatus,Cost: shippingCost,statusBy: shipmentStatusBy,statusDate: shipmentStatusDate,shipmentFileName:shipmentFileName,shippingURL:shippingURL};
     
-    ShippingList.push(data);
-    
-    return ShippingList;
+    return data;
   },
 
   // This method is used to accept or decline the RFQ
@@ -325,6 +354,7 @@ Meteor.methods({
     // Input Params
     var rfqID = params.rfqID;
     var status = params.status;
+    var rfqAmount = params.rfqAmount;
 
     // Transaction object
     var transactionObject = {
@@ -368,7 +398,6 @@ Meteor.methods({
   // This method is used by the Buyer to create Purchase Order
   // function createPurchaseOrder(uint rfqID,string description,uint poReqDate ) onlyBuyer public {
   "createPurchaseOrder" :function(params){
-   
     // Input Params
     var rfqID = params.rfqID;
     var description = params.description;
@@ -429,18 +458,46 @@ Meteor.methods({
     return future.wait();
   },
 
+
+    // This method is used to the send payment according to invoice number
+    "payInvoiceAmountToContract" : function(params) {
+       
+      var invoiceAmount = params.invoiceAmount;
+      var index = params.invoiceNumber - 1;
+
+      console.log(invoiceAmount)
+      console.log(index)
+      console.log(params.nodeAddress)
+      console.log(web3.toWei(invoiceAmount,'ether'))
+
+      // Transaction object
+        var transactionObject = {
+        data: POContractByteCode, 
+        from: params.nodeAddress,
+        to: POContractAddr,
+        value: web3.toWei(invoiceAmount,'ether'),
+        gasPrice: web3.eth.gasPrice,
+        gas: const_gas
+      };
+
+      POContractInstance.payInvoiceAmountToContract.sendTransaction(
+                                    index,transactionObject,function(err,result)
+      {
+        if(err){
+          console.log(err);
+        }
+        else{
+          console.log("Payment complete")
+        }
+      });
+    },
+
   // This method is used by the Buyer to acknowledge the shipment
-  "acknowledgeShippment" :function(params){
-   
-    // Input Params
-    var shipmentID = params.shippingID;
-    var requestBy = params.username;
-    var rfqRequestDt = new Date().setHours(0,0,0,0);
-    var reqProductFileHash = jsonresult.content;
+  "updateShipmentStatus": function(params){ 
 
     // Transaction object
     var transactionObject = {
-      data: RFQContractByteCode, 
+      data: ShipmentContractByteCode, 
       from: params.nodeAddress,
       gasPrice: web3.eth.gasPrice,
       gas: const_gas
@@ -451,29 +508,24 @@ Meteor.methods({
         transactionObject.gas = estimateGas * 2;
     });
 
-    // Event Handling
-    // event ShipmentStatusUpdate(uint shipmentID, ShipmentStatus status,bool isSuccess);
-
-    var ShipmentStatusEvent = ShipmentContractInstance.ShipmentStatusUpdate();
+    var ShipmentStatusUpdateEvent = ShipmentContractInstance.ShipmentStatusUpdate();
     var block = web3.eth.getBlock('latest').number;
     var future = new Future();
-    ShipmentStatusUpdate
-    // Sending Transaction
+
+
     ShipmentContractInstance.updateShipmentStatus.sendTransaction(
-      shipmentID,shippingStatusEnum.Acknowledged,transactionObject,function(err,result)
-    {
+      params.shipmentID, params.Status,params.StatusDate,params.StatusBy,transactionObject,function(err,result){
       if(err){
         console.log(err);
         future.return(err);
       }
       else{
-        ShipmentStatusEvent.watch(function(error,result){
-          if(result.blockNumber>block && result.args.isSuccess && result.args.shipmentID == shipmentID ){
-              ShipmentStatusEvent.stopWatching();
-              console.log("Shipping status update :"+result.args.isSuccess);
-              future.return(parseInt(result.args.isSuccess));
-          }
-        })
+            ShipmentStatusUpdateEvent.watch(function(error,result){
+              if(result.blockNumber>block && result.args.isSuccess && result.args.shipmentID == params.shipmentID ){
+                  ShipmentStatusUpdateEvent.stopWatching();
+                  future.return(result.args.isSuccess);
+              }
+            })
       }
     });
     return future.wait();

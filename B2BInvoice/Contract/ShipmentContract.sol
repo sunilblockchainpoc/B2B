@@ -32,6 +32,7 @@ contract ShipmentContract {
         string shipmentDescription;
         uint shipmentID;
         uint shipmentDate;
+        uint shipmentCost;
         ShipmentStatus status;
         uint shipmentStatusDate;
         string shipmentStatusBy;
@@ -45,12 +46,13 @@ contract ShipmentContract {
     uint SHIPMENT_COUNTER;
     string emptyString = "";
     event ShipmentRequested(uint packageID,uint shipmentID,bool status);
+    event ShipmentUpdated(uint shipmentID,bool updated);
     event ShipmentStatusUpdate(uint shipmentID, ShipmentStatus status,bool isSuccess);
 
 
     // This method is used by Seller to ship the product
     function requestForShipment(uint packageID,string shipmentDescription, uint shipmentStatusDate,string shipmentStatusBy)  onlySeller public {
-        shipmentDetails[SHIPMENT_COUNTER] = ShipmentDetail(packageID,shipmentDescription,SHIPMENT_COUNTER+1,0,ShipmentStatus.Requested,shipmentStatusDate,shipmentStatusBy,emptyString,emptyString);
+        shipmentDetails[SHIPMENT_COUNTER] = ShipmentDetail(packageID,shipmentDescription,SHIPMENT_COUNTER+1,0,0,ShipmentStatus.Requested,shipmentStatusDate,shipmentStatusBy,emptyString,emptyString);
         // Successful Shipment creation
         packageIDtoShipmentID[packageID] = SHIPMENT_COUNTER+1;
         ShipmentRequested(packageID,SHIPMENT_COUNTER+1,true);
@@ -63,7 +65,7 @@ contract ShipmentContract {
     }
 
     // This method returns all the shipment created.
-    function getShipmentDetail(uint shipmentID) view public returns (uint shipmentNo,uint packageID,string shipmentDescription,uint shipmentDate,ShipmentStatus status,string shipmentReceiptFileName,string shipmentReceiptFileHash) {
+    function getShipmentDetail(uint shipmentID) view public returns (uint shipmentNo,uint packageID,string shipmentDescription,uint shipmentDate,ShipmentStatus status, uint cost) {
 
         require(shipmentID > 0);
         uint index = shipmentID - 1;
@@ -73,6 +75,7 @@ contract ShipmentContract {
         shipmentDescription = shipmentDetails[index].shipmentDescription;
         shipmentDate = shipmentDetails[index].shipmentDate;
         status = shipmentDetails[index].status;
+        cost = shipmentDetails[index].shipmentCost;
         return;
     }
 
@@ -97,18 +100,23 @@ contract ShipmentContract {
     }
 
     // This method is used to update shipment details
-    function updateShipmentDetails(uint packageID,uint shipmentDate,ShipmentStatus status,string shipmentReceiptFileName,string shipmentReceiptFileHash) onlyShipper public {
+    function updateShipmentDetails(uint shipmentID,uint shipmentDate,string shipmentDescription, uint shipmentCost,string shipmentReceiptFileName,string shipmentReceiptFileHash) onlyShipper public {
 
-        uint shipmentID = packageIDtoShipmentID[packageID];
+        //uint shipmentID = packageIDtoShipmentID[packageID];
         assert(shipmentID>0);
 
         uint index = shipmentID - 1;
        
-        if (shipmentDetails[index].packageID==packageID) { 
+        if (shipmentDetails[index].shipmentID==shipmentID) { 
             shipmentDetails[index].shipmentDate = shipmentDate;
-            shipmentDetails[index].status = status;
+            shipmentDetails[index].shipmentDescription = shipmentDescription;
+            shipmentDetails[index].shipmentCost = shipmentCost;
             shipmentDetails[index].shipmentReceiptFileName = shipmentReceiptFileName;
             shipmentDetails[index].shipmentReceiptFileHash = shipmentReceiptFileHash;
+
+            ShipmentUpdated(shipmentID, true);
+        } else {
+            ShipmentUpdated(shipmentID,false);
         }
     }
 

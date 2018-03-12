@@ -1,5 +1,4 @@
 pragma solidity ^0.4.18;
-import "./ShipmentContract.sol";
 /*
   This contract is used by Seller to issue Purchase Order
 */
@@ -7,7 +6,7 @@ contract POContract {
 
     address owner;
 
-    function POContract() public {
+    function POContract() public payable {
         owner = msg.sender;
     }
 
@@ -38,6 +37,7 @@ contract POContract {
     struct InvoiceDetail {
         uint poNumber;
         uint invoiceNumber;
+        uint invoiceAmount;
         uint reqDate;
         string reqBy;
         string invoiceReceiptFileName;
@@ -66,7 +66,13 @@ contract POContract {
 
     mapping(uint=>POMapping) poInvoicePackage;
 
-    ShipmentContract shipmentContractAddr;
+    struct Payment {
+        address sender;
+        uint amount;
+    }
+
+    mapping (uint=>Payment) invoiceTracking;
+
 
     event PurchaseOrderCreated(uint rfqID,uint ponumber,bool status);
     event InvoiceCreated(uint ponumber,uint invoiceNumber,bool status);
@@ -108,16 +114,39 @@ contract POContract {
     }
 
     // This method is used by Seller to generate invoice
-    function createInvoice(uint invoiceDate,string reqBy,uint poNumber,string invoiceReceiptFileName,string invoiceReceiptFileHash) onlySeller public {
+    function createInvoice(uint invoiceDate,string reqBy,uint invoiceAmount,uint poNumber,string invoiceReceiptFileName,string invoiceReceiptFileHash) onlySeller public {
         require(poNumber>0);
         // Populate Invoice Details
-        InvoiceDetails[INVOICE_NUMBER] = InvoiceDetail(poNumber,INVOICE_NUMBER+1,invoiceDate,reqBy,invoiceReceiptFileName,invoiceReceiptFileHash);
+        InvoiceDetails[INVOICE_NUMBER] = InvoiceDetail(poNumber,INVOICE_NUMBER+1,invoiceAmount,invoiceDate,reqBy,invoiceReceiptFileName,invoiceReceiptFileHash);
         POMapping storage poMapping = poInvoicePackage[poNumber];
         poMapping.poNumber = poNumber;
         poMapping.invoiceNumber = INVOICE_NUMBER+1;
         // Successful Invoice Generation - Event Raised
         InvoiceCreated(poNumber,INVOICE_NUMBER+1,true);
         INVOICE_NUMBER++;
+    }
+
+    // This method is used to send payment according to invoice number
+    function payInvoiceAmountToContract(uint invoiceIndex) payable public onlyBuyer {
+       uint invoiceAmount = InvoiceDetails[invoiceIndex].invoiceAmount * 1 wei;
+       uint receivedAmount = msg.value;
+       //require(receivedAmount==invoiceAmount);
+       invoiceTracking[invoiceIndex+1] = Payment(msg.sender,receivedAmount);
+    }
+
+    // This method is used to release the payment for the given invoice
+    function releasePayment(uint packageID) public onlyBuyer {
+        uint index = packageID-1;
+        var(poNumber,,,,,,) = getPackageDetailsByPackageIndex(index);
+        // Get he Invoice details.
+        uint invoiceNumber = poInvoicePackage[poNumber].invoiceNumber;
+        address sender = msg.sender;
+        // Comparing whether the original Invoice amount sender is the one who requests for releasing funds
+        assert(sender==invoiceTracking[invoiceNumber-1].sender);
+        // Sending the funds from contract to Seller
+        owner.transfer(invoiceTracking[invoiceNumber-1].amount);
+        invoiceTracking[invoiceNumber-1].amount = 0;
+
     }
 
     // This method is used by Seller to generate Package Slip - which inturn issues shipment
@@ -143,10 +172,11 @@ contract POContract {
     }
 
     // This method is used get the invoice detail based on invoice Index
-    function getInvoiceDetailsByInvoiceIndex(uint invoiceIndex) view public returns (uint poNumber, uint invoiceNumber, string invoiceReceiptFileName, string invoiceReceiptFileHash, uint invoiceDate, string requestBy) {
+    function getInvoiceDetailsByInvoiceIndex(uint invoiceIndex) view public returns (uint poNumber, uint invoiceNumber,uint invoiceAmount, string invoiceReceiptFileName, string invoiceReceiptFileHash, uint invoiceDate, string requestBy) {
         // Getting the appropriate Invoice details
         poNumber = InvoiceDetails[invoiceIndex].poNumber;
         invoiceNumber = InvoiceDetails[invoiceIndex].invoiceNumber;
+        invoiceAmount = InvoiceDetails[invoiceIndex].invoiceAmount;
         invoiceReceiptFileName = InvoiceDetails[invoiceIndex].invoiceReceiptFileName;
         invoiceReceiptFileHash = InvoiceDetails[invoiceIndex].invoiceReceiptFileHash;
         invoiceDate = InvoiceDetails[invoiceIndex].reqDate;

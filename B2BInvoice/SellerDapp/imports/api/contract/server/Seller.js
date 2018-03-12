@@ -299,37 +299,37 @@ Meteor.methods({
     return data;
 },
 
-/* function getInvoiceDetailsByInvoiceIndex(uint invoiceIndex) view public returns 
-  (uint poNumber, uint invoiceNumber, string invoiceReceiptFileName, string invoiceReceiptFileHash, 
-  uint invoiceDate, string requestBy) {*/
 
-   "getInvoiceDetailByInvoiceNumber": function(params){ 
+  //function getInvoiceDetailsByInvoiceIndex(uint invoiceIndex) view public returns 
+  //(uint poNumber, uint invoiceNumber, uint packageID, string invoiceReceiptFileName, 
+  //string invoiceReceiptFileHash, string packageSlipFileName, string packageSlipFileHash) {
 
-    var invoiceNumber = params.invoiceNumber;
-    var index = invoiceNumber - 1;
-    console.log(index)
+    "getInvoiceDetailByInvoiceNumber": function(params){ 
 
-    var invoiceDetails = POContractInstance.getInvoiceDetailsByInvoiceIndex(index);
-    var InvoiceList;
-    console.log(invoiceDetails)
-
-    var r_invoiceNumber = parseInt(invoiceDetails[1]);
-    
-    if (r_invoiceNumber != invoiceNumber) 
-      return;
-    
-    var poNumber = parseInt(invoiceDetails[0]);
-    var invoiceFileName = invoiceDetails[2];
-    var invoiceFileHash = invoiceDetails[3];
-    var invoiceDate  = new Date(parseInt(invoiceDetails[4])).toISOString().slice(0,10);
-    var requestBy = invoiceDetails[5];
-
-    var invoiceURL = "?name=" +invoiceFileName + "&filehash=" +invoiceFileHash;
-    var data = {poNumber:poNumber,invoiceNumber:r_invoiceNumber,invoiceFileName:invoiceFileName,invoiceURL:invoiceURL,invoiceDate:invoiceDate,requestBy:requestBy};
-    
-    InvoiceList = data;
-    return InvoiceList;
-  },
+      var invoiceNumber = params.invoiceNumber;
+      var index = invoiceNumber - 1;
+  
+      var invoiceDetails = POContractInstance.getInvoiceDetailsByInvoiceIndex(index);
+      var InvoiceList;
+  
+      var r_invoiceNumber = parseInt(invoiceDetails[1]);
+      
+      if (r_invoiceNumber != invoiceNumber) 
+        return;
+      
+      var poNumber = parseInt(invoiceDetails[0]);
+      var invoiceAmount = parseInt(invoiceDetails[2]);
+      var invoiceFileName = invoiceDetails[3];
+      var invoiceFileHash = invoiceDetails[4];
+      var invoiceDate  = new Date(parseInt(invoiceDetails[5])).toISOString().slice(0,10);
+      var requestBy = invoiceDetails[6];
+  
+      var invoiceURL = "?name=" +invoiceFileName + "&filehash=" +invoiceFileHash;
+      var data = {poNumber:poNumber,invoiceNumber:r_invoiceNumber,invoiceAmount:invoiceAmount,invoiceFileName:invoiceFileName,invoiceURL:invoiceURL,invoiceDate:invoiceDate,requestBy:requestBy};
+      
+      InvoiceList = data;
+      return InvoiceList;
+    },
 
   /*    
       function getShipmentDetail(uint shipmentID) view public returns 
@@ -381,6 +381,7 @@ Meteor.methods({
       // Input Params
       var packageDescription = params.packageDesc;
       var poNumber = params.poNumber;
+      var invoiceAmount = params.invoiceAmt;
       var invoiceFileName = params.invoiceFilename;
       var packageSlipFileName = params.packageFilename;
       var username = params.username;
@@ -438,9 +439,15 @@ Meteor.methods({
       // Sending Invoice Creation Transaction
 
       /********************************** Start Invoice Creation *************************************************** */
-      
+      console.log(responseDt)
+      console.log(responseBy)
+      console.log(invoiceAmount)
+      console.log(poNumber)
+      console.log(invoiceFileName)
+      console.log(invoiceFileHash)
       POContractInstance.createInvoice.sendTransaction(  responseDt,
                                                          responseBy,
+                                                         invoiceAmount,
                                                          poNumber,
                                                          invoiceFileName,
                                                          invoiceFileHash,

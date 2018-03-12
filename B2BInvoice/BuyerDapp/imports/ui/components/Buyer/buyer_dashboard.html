@@ -23,15 +23,9 @@
                             <tr>
                                <td><a href="{{pathFor 'App.rfq.details' rfq=(rfqID)}}" id={{rfqID}} class="namelink">{{rfqID}}</a></td>
                                <td><a href="{{pathFor 'App.po.details' poNumber=(poNumber)}}" id={{poNumber}} class="namelink">PO-{{poNumber}}</a></td>
-                                <td>
-                                <a href =""  id={{reqURL}} class="reqfilelink">
-                                    {{reqFileName}}
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="" id={{resURL}} class="resfilelink">
-                                        {{resFileName}}
-                                        </a>
+                                <td><a href="{{pathFor 'App.invoice.details' inv=(invoiceNo)}}" id={{d}} class="namelink">INVOICE-{{invoiceNo}}</a></td>
+                                <td><a href="{{pathFor 'App.shipment.details' ship=(shipmentID)}}" id={{shipmentID}} class="namelink">SHIP-{{shipmentID}}</a>                               
+                                   
                                 </td>
                                 <td>{{rfqValue}}</td>
                             </tr>

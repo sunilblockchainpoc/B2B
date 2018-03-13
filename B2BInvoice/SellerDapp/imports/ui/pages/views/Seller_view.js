@@ -12,6 +12,7 @@ The view1 template
 */
 import './Seller_view.html';
 import '../../components/Seller/seller_dashboard.js';
+import '../../components/Seller/seller_accounts.js';
 
 
 var poNumber = new ReactiveVar();

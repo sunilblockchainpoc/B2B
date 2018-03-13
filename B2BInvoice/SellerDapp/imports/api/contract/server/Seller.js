@@ -571,7 +571,133 @@ Meteor.methods({
             
       });
       return future.wait();
-}
+},
+
+"getShipmentDetail": function(params){ 
+
+  var shipmentID = params.shipmentID;
+  //var index = shipmentID - 1;
+  var shippingDetails,additionalDetails;
+  var shipmentStatusDate;
+  var shipmentStatusBy;
+  var shipmentFileName;
+  var shipmentFileHash;
+  var shippingURL;
+  
+  shippingDetails = ShipmentContractInstance.getShipmentDetail(shipmentID);
+
+  var r_shipmentNo = parseInt(shippingDetails[0]);
+  var packageID = parseInt(shippingDetails[1]);
+  var shipmentDescription = shippingDetails[2];
+  
+  var shipmentDate = new Date(parseInt(shippingDetails[3])).toISOString().slice(0,10);
+  var shippingStatus = shippingStatusEnum.get(parseInt(shippingDetails[4])).key;
+
+  var shippingCost = parseInt(shippingDetails[5]);
+
+  additionalDetails = ShipmentContractInstance.getShipmentAdditionalDetail(shipmentID );
+
+  additionalShipmentNo = parseInt(additionalDetails[0]);
+  if(r_shipmentNo==additionalShipmentNo) {
+    shipmentStatusDate = new Date(parseInt(additionalDetails[1])).toISOString().slice(0,10);
+    shipmentStatusBy = additionalDetails[2];
+    shipmentFileName = additionalDetails[3];
+    shipmentFileHash = additionalDetails[4];
+    shippingURL = "?name=" +shipmentFileName + "&filehash=" +shipmentFileHash;//TODO
+  }
+
+  var data = {shipmentID:r_shipmentNo,shipmentDescription:shipmentDescription,shipmentDate:shipmentDate,
+              shippingStatus:shippingStatus,Cost: shippingCost,statusBy: shipmentStatusBy,statusDate: shipmentStatusDate,shipmentFileName:shipmentFileName,shippingURL:shippingURL};
+  
+  return data;
+},
+
+"updateShimpmentDetails": function(params){ 
+
+  var uploadURL = Meteor.settings.server.uploadURL;
+  var data = {fileName:params.OriginalFileName, file: new Buffer(params.File)}
+  var asyncFunc  = Meteor.wrapAsync( HTTP.post );
+
+  var shipmentDate = new Date(params.shipmentDate).setHours(0,0,0,0);
+
+  var uploadResult = asyncFunc(uploadURL,{
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    content:JSON.stringify(data)
+  }); 
+
+  var shipmentFileHash = uploadResult.content;
+
+  var transactionObject = {
+    data: ShipmentContractByteCode, 
+    from: params.nodeAddress,
+    gasPrice: web3.eth.gasPrice,
+    gas: const_gas
+  };
+
+  web3.eth.estimateGas(transactionObject,function(err,estimateGas){
+    if(!err)
+      transactionObject.gas = estimateGas * 2;
+  });
+
+  var ShipmentUpdatedEvent = ShipmentContractInstance.ShipmentUpdated();
+  var block = web3.eth.getBlock('latest').number;
+  var future = new Future();
+ 
+  ShipmentContractInstance.updateShipmentDetails.sendTransaction(
+    params.shipmentID,shipmentDate,params.shipmentDescription,params.shipmentCost,params.OriginalFileName,shipmentFileHash,transactionObject,function(err,result){
+    if(err){
+      console.log(err);
+      future.return(err);
+    }
+    else{
+          ShipmentUpdatedEvent.watch(function(error,result){
+            if(result.blockNumber>block && result.args.updated && result.args.shipmentID == params.shipmentID ){
+                ShipmentUpdatedEvent.stopWatching();
+                console.log("Shipment Details Updated" + result.args.updated)
+                //future.return(result.args.updated);
+
+                var ShipmentStatusUpdateEvent = ShipmentContractInstance.ShipmentStatusUpdate();
+                var block2 = web3.eth.getBlock('latest').number;
+            
+                ShipmentContractInstance.updateShipmentStatus.sendTransaction(
+                params.shipmentID, params.Status,params.StatusDate,params.StatusBy,transactionObject,function(err,result){
+                if(err){
+                  console.log(err);
+                  future.return(err);
+                }
+                else{
+                      ShipmentStatusUpdateEvent.watch(function(error,result2){
+                        if(result2.blockNumber>block2 && result2.args.isSuccess && result2.args.shipmentID == params.shipmentID ){
+                          console.log(result2);
+                            ShipmentStatusUpdateEvent.stopWatching();
+                            future.return(result2.args.isSuccess);
+                        }
+                      })
+                    }
+                });
+            }
+          })
+    }
+  });
+  return future.wait();
+},
+
+  /************************************************************************************************** 
+    Get Account Balance
+   ***************************************************************************************************/   
+  "getBalance":function(params) {
+    var accountInfo = new Array;
+    //console.log(params);
+    var result = web3.eth.getBalance(params.address);
+    bal = web3.fromWei(result,"ether");
+    data = { account_number:params.address, balance:parseInt(bal)}
+    console.log(data)
+    return data;
+},
+
+
 });
 
 function getJSONObject (name,filehash)

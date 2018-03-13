@@ -48,13 +48,15 @@ Template['components_invoice_details'].events({
     
     Meteor.call('payInvoiceAmountToContract',data,function(error, result){
 
-            if (!error)	{
-                template.find("#btnCreatePO").disabled=false;
-
-                return TemplateVar.set(template,'state',{isMined: true, poNumber:result});
+        console.log(result)
+        if (result)	{
+                template.find("#btnSendAmount").disabled=false;
+                alert("Payment transfered to Smart Contract")
             }
-            template.find("#btnCreatePO").disabled=false;
-            
+            else {
+                alert("Payment transfer failed !!!")
+            }
+            template.find("#btnSendAmount").disabled=false;
         });
     }
 });

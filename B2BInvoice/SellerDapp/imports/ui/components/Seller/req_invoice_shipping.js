@@ -17,6 +17,7 @@ Template['components_invoice_shipping'].onRendered(function(){
 				{
                     if (result[i].poNumber!="") {
                         data = {index:result[i].poNumber - 1, poNumber:result[i].poNumber};
+                        console.log("data:"+data.poNumber)
                         PONumbers.push(data);
                     }
 				}
@@ -29,6 +30,7 @@ Template['components_invoice_shipping'].onRendered(function(){
 
 Template['components_invoice_shipping'].helpers({
 	"getPOs" : function(){
+        console.log("POnumbers:"+PONumbers.list());
 	 return PONumbers.list();
 	},
 });

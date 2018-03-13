@@ -1,0 +1,35 @@
+<template name="components_seller_acounts">
+        <div class="panel panel-default panel-dapp">
+            <div class="panel-heading">
+                Account Details
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    
+                                    <tr>
+                                        <td>Account address</td>
+                                        <td>Ether Balance</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        {{#with TemplateVar.get 'accountInfo'}} 
+
+                                    <tr>
+                                        <td>{{account_number}}</td>
+                                        <td>{{balance}}</td>
+                                </tr>
+                                {{/with}}
+
+                               </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    

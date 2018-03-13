@@ -458,17 +458,12 @@ Meteor.methods({
     return future.wait();
   },
 
-
+  
     // This method is used to the send payment according to invoice number
     "payInvoiceAmountToContract" : function(params) {
        
       var invoiceAmount = params.invoiceAmount;
       var index = params.invoiceNumber - 1;
-
-      console.log(invoiceAmount)
-      console.log(index)
-      console.log(params.nodeAddress)
-      console.log(web3.toWei(invoiceAmount,'ether'))
 
       // Transaction object
         var transactionObject = {
@@ -480,6 +475,10 @@ Meteor.methods({
         gas: const_gas
       };
 
+    var PaymentStatusEvent = POContractInstance.PaymentStatus();
+    var block = web3.eth.getBlock('latest').number;
+    var future = new Future();
+    
       POContractInstance.payInvoiceAmountToContract.sendTransaction(
                                     index,transactionObject,function(err,result)
       {
@@ -487,9 +486,23 @@ Meteor.methods({
           console.log(err);
         }
         else{
-          console.log("Payment complete")
+      /************************* PaymentStatus Event Handling start**********************************/
+          console.log("PaymentStatus  - Event watch started")
+          PaymentStatusEvent.watch(function(error,result){
+          console.log(result.blockNumber+">"+block)
+          console.log(result.args.status)
+          
+          if(result.blockNumber>block && result.args.status){
+              PaymentStatusEvent.stopWatching();
+              console.log("Payment complete")
+              future.return(true);
+          }
+        });
+        console.log("PaymentStatus  - Event watch ended")
+        /************************* PaymentStatus Event Handling End  **********************************/
         }
       });
+      return future.wait();
     },
 
   // This method is used by the Buyer to acknowledge the shipment
@@ -511,7 +524,7 @@ Meteor.methods({
     var ShipmentStatusUpdateEvent = ShipmentContractInstance.ShipmentStatusUpdate();
     var block = web3.eth.getBlock('latest').number;
     var future = new Future();
-
+    console.log("Shipping  - Update status")
 
     ShipmentContractInstance.updateShipmentStatus.sendTransaction(
       params.shipmentID, params.Status,params.StatusDate,params.StatusBy,transactionObject,function(err,result){
@@ -520,9 +533,66 @@ Meteor.methods({
         future.return(err);
       }
       else{
-            ShipmentStatusUpdateEvent.watch(function(error,result){
-              if(result.blockNumber>block && result.args.isSuccess && result.args.shipmentID == params.shipmentID ){
+
+        console.log("Shipping Event watch Started")
+
+        ShipmentStatusUpdateEvent.watch(function(error,result){
+          console.log(result.blockNumber+">"+block)
+          console.log(result.args.isSuccess)
+          console.log(result.args.shipmentID+"="+params.shipmentID)
+
+
+          if(result.blockNumber>block && result.args.isSuccess && result.args.shipmentID == params.shipmentID ){
                   ShipmentStatusUpdateEvent.stopWatching();
+
+                  console.log("Shipping Event watch Ended")
+                  
+/************************* Release Payment to Shipper - START **************************** */
+     //    function releasePayment(uint packageID) public onlyBuyer {
+      console.log("Shipping Event watch stopped")
+      console.log("Shipment ID:"+params.shipmentID)
+         
+      var shippingDetails = ShipmentContractInstance.getShipmentDetail(params.shipmentID);
+      var r_shipmentNo = parseInt(shippingDetails[0]);
+      var packageID = parseInt(shippingDetails[1]);
+      console.log("Shipment Number:"+r_shipmentNo);
+      console.log("Package ID:"+packageID);
+      var po_transactionObject = {
+                                  data: POContractByteCode, 
+                                  from: params.nodeAddress,
+                                  gasPrice: web3.eth.gasPrice,
+                                  gas: const_gas
+                                  };
+      var block1 = web3.eth.getBlock('latest').number;
+      var PaymentStatusEvent = POContractInstance.PaymentStatus();
+
+      // Sending Transaction
+      POContractInstance.releasePayment.sendTransaction(
+        packageID,po_transactionObject,function(err,result)
+      {
+
+      /************************* PaymentStatus Event Handling start**********************************/
+      console.log("PaymentStatus  - Event watch started")
+      PaymentStatusEvent.watch(function(error,result){
+      console.log(result.blockNumber+">"+block)
+      console.log(result.args.status)
+      
+      if(result.blockNumber>block1 && result.args.status){
+          PaymentStatusEvent.stopWatching();
+          console.log("Payment complete")
+          future.return(true);
+      }
+      else {
+          future.return(false);
+      }
+
+    });
+    console.log("PaymentStatus  - Event watch ended")
+    /************************* PaymentStatus Event Handling End  **********************************/
+      });                   
+                 
+    /************************* Release Payment to Shipper - END **************************** */
+                 
                   future.return(result.args.isSuccess);
               }
             })
@@ -530,7 +600,6 @@ Meteor.methods({
     });
     return future.wait();
   },
-
 });
 
 function getJSONObject (name,filehash)

@@ -77,6 +77,7 @@ contract POContract {
     event PurchaseOrderCreated(uint rfqID,uint ponumber,bool status);
     event InvoiceCreated(uint ponumber,uint invoiceNumber,bool status);
     event PackageSlipCreated(uint ponumber,uint packageID,bool status);
+    event PaymentStatus(bool status);
 
     // This method is used by the buyer to create Purchase Order
     
@@ -128,10 +129,11 @@ contract POContract {
 
     // This method is used to send payment according to invoice number
     function payInvoiceAmountToContract(uint invoiceIndex) payable public onlyBuyer {
-       uint invoiceAmount = InvoiceDetails[invoiceIndex].invoiceAmount * 1 wei;
+       //uint invoiceAmount = InvoiceDetails[invoiceIndex].invoiceAmount * 1 wei;
        uint receivedAmount = msg.value;
        //require(receivedAmount==invoiceAmount);
        invoiceTracking[invoiceIndex+1] = Payment(msg.sender,receivedAmount);
+       PaymentStatus(true);
     }
 
     // This method is used to release the payment for the given invoice
@@ -142,10 +144,11 @@ contract POContract {
         uint invoiceNumber = poInvoicePackage[poNumber].invoiceNumber;
         address sender = msg.sender;
         // Comparing whether the original Invoice amount sender is the one who requests for releasing funds
-        assert(sender==invoiceTracking[invoiceNumber-1].sender);
+        assert(sender==invoiceTracking[invoiceNumber].sender);
         // Sending the funds from contract to Seller
-        owner.transfer(invoiceTracking[invoiceNumber-1].amount);
-        invoiceTracking[invoiceNumber-1].amount = 0;
+        owner.transfer(invoiceTracking[invoiceNumber].amount);
+        invoiceTracking[invoiceNumber].amount = 0;
+        PaymentStatus(true);
 
     }
 

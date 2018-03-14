@@ -1,0 +1,48 @@
+<template name="components_Shipper_dashboard">
+    <div class="panel panel-default panel-dapp">
+        <div class="panel-heading">
+            Shipments Dashboard
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <td>Shipment Id</td>
+                                    <td>Description</td>
+                                    <td>Status Updated By</td>
+                                    <td>Shipment Date</td>
+                                    <td>Status</td>
+                                    <td>Shipment Receipt</td>
+                                    <td>Cost</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {{#with TemplateVar.get 'state'}}
+                            {{#if list}}
+                            {{#each getShipments}}
+                            <tr>
+                               <td><a href="{{pathFor 'App.shipment.details' ship=(shipmentID)}}" id={{shipmentID}} class="namelink">{{shipmentID}}</a></td>
+                               <td>{{shipmentDescription}}</td>
+                                <td>{{statusBy}}</td>
+                                <td>{{shipmentDate}}</td>
+                                <td><a href="{{pathFor 'App.shipment.details' ship= (shipmentID)}}" id={{shipmentID}} class="statuslink">{{shippingStatus}}</a></td>
+                                <td> <a href="" id={{shippingURL}} class="shipFilelink">
+                                    {{shipmentFileName}}
+                                    </a></td>
+                                <td>{{Cost}}</td>
+                            </tr>
+                            {{/each}}
+                            {{/if}}
+                            {{/with}}
+                           </tbody>
+                        </table>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

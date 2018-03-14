@@ -1,0 +1,76 @@
+<template name="components_shipment_status">
+    <div class="panel panel-default panel-dapp">
+        <div class="panel-heading">
+            Updated Shipment Status
+        </div>
+        <div class="panel-body">
+
+                {{#with TemplateVar.get 'state'}}
+                {{#if isError}}
+                    <div class="alert alert-warning">
+                        Error updating the shipment status. The error was "{{error}}"
+                    </div>
+                {{/if}}
+            
+                {{#if isMining}}
+                    <div class="alert alert-info">
+                        Shipment status update is in progress...
+                        <span class="badge text-right">
+                            <i class="fa fa-cog fa-spin"></i>
+                        </span>
+                    </div>
+                {{/if}}
+            
+                {{#if isMined}}
+                {{#if isUpdated}}
+                    <div class="alert alert-info">
+                        The Shipment status has been updated successfully!!
+                    </div>
+                    <hr />
+                    <br />
+                
+                {{else}}    
+
+                    <div class="alert alert-warning">
+                        Error updating the shipment status. The error was "{{error}}"
+                    </div>
+                    <hr />
+                    <br />
+            	{{/if}}
+                   {{/if}} 
+            {{/with}} 
+ 
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal">
+                    {{#with TemplateVar.get 'shipmentData'}} 
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Shipment Id:</label>
+                            <div class="col-sm-3">{{shipmentId}}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="shipmentStatus" class="col-sm-4 control-label">Shipment Status</label>
+                            <div class="col-sm-2">
+                                <select class="form-control" id="shipmentStatus"> 
+                                {{#each getStatus}}
+                                    <option value={{value}}>{{key}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="col-sm-5">
+                                <button type="button" id="btnupdateShipmentStatus" style="position: relative;top: 10px;left: 72%;" class="btn btn-sm bg-all"> Update
+                                </button>
+                            </div>
+                    </div>                        
+                    {{/with}} 
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+

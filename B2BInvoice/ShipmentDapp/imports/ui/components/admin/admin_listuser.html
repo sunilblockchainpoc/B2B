@@ -1,0 +1,42 @@
+<template name="components_admin_listuser">
+    <div class="panel panel-default panel-dapp">
+        <div class="panel-heading">
+            User Details
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <td>First Name</td>
+                                    <td>Last Name</td>
+                                    <td>UserName</td>
+                                    <td>Password</td>
+                                    <td>Address</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {{#with TemplateVar.get 'state'}}
+                            {{#if list}}
+                            {{#each getUserList}}
+                            <tr>
+                                <td>{{firstName}}</td>
+                                <td>{{lastName}}</td>
+                                <td>{{userName}}</td>
+                                <td>{{password}}</td>
+                                <td>{{address}}</td>
+                            </tr>
+                            {{/each}}
+                            {{/if}}
+                            {{/with}}
+                           </tbody>
+                        </table>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

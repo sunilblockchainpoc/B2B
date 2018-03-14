@@ -37,7 +37,7 @@ B2BInvoice/ShipmentDapp/imports/startup/server/Contract/UserRepository.abi
 B2BInvoice/ShipmentDapp/imports/startup/server/Contract/UserRepository.bin
 B2BInvoice/ShipmentDapp/imports/startup/server/Contract/UserRepository.json
 B2BInvoice/ShipmentDapp/settings.json
-B2BInvoice/api/downloads/*
+B2BInvoice/api/downloads/
 B2BInvoice/api/logs/debug.log
 B2BInvoice/bin/Contract/POContract.abi
 B2BInvoice/bin/Contract/POContract.bin
@@ -51,5 +51,5 @@ B2BInvoice/bin/Contract/ShipmentContract.json
 B2BInvoice/bin/Contract/UserRepository.abi
 B2BInvoice/bin/Contract/UserRepository.bin
 B2BInvoice/bin/Contract/UserRepository.json
-B2BInvoice/temp/downloads/*
+B2BInvoice/temp/downloads/
 

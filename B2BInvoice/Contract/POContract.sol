@@ -73,11 +73,11 @@ contract POContract {
 
     mapping (uint=>Payment) invoiceTracking;
 
-
     event PurchaseOrderCreated(uint rfqID,uint ponumber,bool status);
     event InvoiceCreated(uint ponumber,uint invoiceNumber,bool status);
     event PackageSlipCreated(uint ponumber,uint packageID,bool status);
-    event PaymentStatus(bool status);
+    event BuyerPaysToContract(address recfrom, address sendTo,uint invoiceNum,uint value,bool status);
+    event ContractPaystoSeller(address recfrom, address sendTo,uint invoiceNum,uint value,bool status);
 
     // This method is used by the buyer to create Purchase Order
     
@@ -133,7 +133,7 @@ contract POContract {
        uint receivedAmount = msg.value;
        //require(receivedAmount==invoiceAmount);
        invoiceTracking[invoiceIndex+1] = Payment(msg.sender,receivedAmount);
-       PaymentStatus(true);
+       BuyerPaysToContract(msg.sender,this,invoiceIndex+1,receivedAmount,true);
     }
 
     // This method is used to release the payment for the given invoice
@@ -147,9 +147,8 @@ contract POContract {
         assert(sender==invoiceTracking[invoiceNumber].sender);
         // Sending the funds from contract to Seller
         owner.transfer(invoiceTracking[invoiceNumber].amount);
+        ContractPaystoSeller(msg.sender,owner,invoiceNumber,invoiceTracking[invoiceNumber].amount,true);
         invoiceTracking[invoiceNumber].amount = 0;
-        PaymentStatus(true);
-
     }
 
     // This method is used by Seller to generate Package Slip - which inturn issues shipment

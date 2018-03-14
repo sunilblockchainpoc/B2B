@@ -220,7 +220,7 @@ Meteor.methods({
                                      passwordChangedEvent.stopWatching();
                                         if (!future.isResolved())  {
                                           console.log("Password change successfull for User ID - "+params.UserName)
-                                          future.return(eventResult.args.success);
+                                          future.return(eventResult.args.status);
                                         }
                             }
                            })

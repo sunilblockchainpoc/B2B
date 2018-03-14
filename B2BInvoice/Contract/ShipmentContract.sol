@@ -45,9 +45,9 @@ contract ShipmentContract {
 
     uint SHIPMENT_COUNTER;
     string emptyString = "";
-    event ShipmentRequested(uint packageID,uint shipmentID,bool status);
-    event ShipmentUpdated(uint shipmentID,bool updated);
-    event ShipmentStatusUpdate(uint shipmentID, ShipmentStatus status,bool isSuccess);
+    event ShipmentRequested(uint packageID,uint shipmentID,ShipmentStatus state,bool status);
+    event ShipmentUpdated(uint shipmentID,bool status);
+    event ShipmentStatusUpdate(uint shipmentID, ShipmentStatus state,bool status);
 
 
     // This method is used by Seller to ship the product
@@ -55,7 +55,7 @@ contract ShipmentContract {
         shipmentDetails[SHIPMENT_COUNTER] = ShipmentDetail(packageID,shipmentDescription,SHIPMENT_COUNTER+1,0,0,ShipmentStatus.Requested,shipmentStatusDate,shipmentStatusBy,emptyString,emptyString);
         // Successful Shipment creation
         packageIDtoShipmentID[packageID] = SHIPMENT_COUNTER+1;
-        ShipmentRequested(packageID,SHIPMENT_COUNTER+1,true);
+        ShipmentRequested(packageID,SHIPMENT_COUNTER+1,ShipmentStatus.Requested,true);
         SHIPMENT_COUNTER++;
     }
 

@@ -208,9 +208,9 @@ Meteor.methods({
       }
       else{
             ShipmentUpdatedEvent.watch(function(error,result){
-              if(result.blockNumber>block && result.args.updated && result.args.shipmentID == params.shipmentID ){
+              if(result.blockNumber>block && result.args.status && result.args.shipmentID == params.shipmentID ){
                   ShipmentUpdatedEvent.stopWatching();
-                  console.log("Shipment Details Updated" + result.args.updated)
+                  console.log("Shipment Details Updated" + result.args.status)
                   //future.return(result.args.updated);
 
                   var ShipmentStatusUpdateEvent = ShipmentContractInstance.ShipmentStatusUpdate();
@@ -224,10 +224,10 @@ Meteor.methods({
                   }
                   else{
                         ShipmentStatusUpdateEvent.watch(function(error,result2){
-                          if(result2.blockNumber>block2 && result2.args.isSuccess && result2.args.shipmentID == params.shipmentID ){
+                          if(result2.blockNumber>block2 && result2.args.status && result2.args.shipmentID == params.shipmentID ){
                             console.log(result2);
                               ShipmentStatusUpdateEvent.stopWatching();
-                              future.return(result2.args.isSuccess);
+                              future.return(result2.args.status);
                           }
                         })
                       }
@@ -266,9 +266,11 @@ Meteor.methods({
       }
       else{
             ShipmentStatusUpdateEvent.watch(function(error,result){
-              if(result.blockNumber>block && result.args.isSuccess && result.args.shipmentID == params.shipmentID ){
+              console.log(result.args.status)
+              console.log(result.args.shipmentID)
+              if(result.blockNumber>block && result.args.status && result.args.shipmentID == params.shipmentID ){
                   ShipmentStatusUpdateEvent.stopWatching();
-                  future.return(result.args.isSuccess);
+                  future.return(result.args.status);
               }
             })
       }

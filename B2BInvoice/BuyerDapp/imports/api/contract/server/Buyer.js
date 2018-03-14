@@ -8,7 +8,6 @@ var path = require('path');
 var mime = require('mime');
 var Enum = require('enum');
 var request  = require("request");
-
 var rfqStatusEnum = new Enum({'Requested': 0, 'Responded': 1, 'Accepted': 2, 'Declined':3});
 var shippingStatusEnum = new Enum({'Requested': 0, 'Received': 1, 'Shipped': 2, 'Failed':3,'Delivered':4,'Acknowledged':5});
 
@@ -347,6 +346,197 @@ Meteor.methods({
     return data;
   },
 
+  "getEventDetails" :function() {
+  
+  var EventList = new Array;
+  var future = new Future();
+
+  var userEvents = userRepositoryContractInstance.allEvents({fromBlock: 0, toBlock: 'latest'});
+  userEvents.get(function(userError, userLogs) {
+  
+  if (!userError) {
+          console.log("Capturing all User Access Contract events ....");
+          userLogs.forEach(function(result) {
+  
+              var transactionHash = result.transactionHash;
+              var blockNumber = result.blockNumber;
+              var eventType = result.event;
+              var category = "User Access";
+              var primary_id = result.args.userName; // Username
+              var secondary_id = ""
+              var state = "";
+              var status = result.args.status;
+              if (result.args.firstName!=undefined)
+                var additionalInfo ={firstName:result.args.firstName,lastName:result.args.lastName};
+              else
+                var additionalInfo ={};
+              var data = {transactionHash:transactionHash,
+                          blockNumber:blockNumber,
+                          eventType:eventType,
+                          category:category,
+                          primary_id:primary_id,
+                          secondary_id:secondary_id,
+                          state:state,
+                          status:status,
+                          additionalInfo:additionalInfo
+                        };
+                EventList.push(data);
+            });
+
+ // Get all RFQ Events
+ var rfqEvents = RFQContractInstance.allEvents({fromBlock: 0, toBlock: 'latest'});
+ rfqEvents.get(function(rfqError, rfqLogs) {
+ 
+ if (!rfqError) {
+         console.log("Capturing all RFQ Contract events ....");
+         rfqLogs.forEach(function(result) {
+ 
+             var transactionHash = result.transactionHash;
+             var blockNumber = result.blockNumber;
+             var eventType = result.event;
+             var category = "RFQ";
+             var primary_id = "RFQ-"+parseInt(result.args.rfqID);
+             var secondary_id =""
+             var state  = rfqStatusEnum.get(parseInt(result.args.state)).key;
+             var status = result.args.status;
+             var additionalInfo = {};
+             
+             var data = {transactionHash:transactionHash,
+                         blockNumber:blockNumber,
+                         eventType:eventType,
+                         category:category,
+                         primary_id:primary_id,
+                         secondary_id:secondary_id,
+                         state:state,
+                         status:status,
+                         additionalInfo:additionalInfo
+                       };
+               EventList.push(data);
+           });
+
+
+
+           var poEvents = POContractInstance.allEvents({fromBlock: 0, toBlock: 'latest'});
+           poEvents.get(function(poError, poLogs) {
+           
+           if (!poError) {
+                   console.log("Capturing all Purchase Order Contract events ....");
+                   poLogs.forEach(function(result) {
+           
+                       var transactionHash = result.transactionHash;
+                       var blockNumber = result.blockNumber;
+                       var eventType = result.event;
+                       var category = "Purchase Order";
+                       var additionalInfo = ""
+                       var primary_id = ""
+                       var secondary_id =""
+                       var state = ""
+       
+                       switch(eventType) {
+       
+                           case "PurchaseOrderCreated":
+                               primary_id = "RFQ-"+parseInt(result.args.rfqID);
+                               secondary_id = "PO-"+parseInt(result.args.ponumber);
+                               additionalInfo = { rfqID:primary_id,ponumber:secondary_id }
+                               break;
+                           case "InvoiceCreated":
+                               primary_id = "PO-"+parseInt(result.args.ponumber);
+                               secondary_id = "INV-"+parseInt(result.args.invoiceNumber);
+                               additionalInfo = { ponumber:primary_id,invoiceNumber:secondary_id }
+                               break;
+                           case "PackageSlipCreated":
+                               primary_id = "PO-"+parseInt(result.args.ponumber);
+                               secondary_id = "PACK-"+parseInt(result.args.packageID);
+                               additionalInfo = { ponumber:primary_id,packageID:secondary_id }
+                           break;
+                           case "BuyerPaysToContract":
+                               primary_id = "INV-"+parseInt(result.args.invoiceNum);
+                               additionalInfo = { recfrom:result.args.recfrom,sendTo:result.args.sendTo,value:parseInt(result.args.value) }
+                               break;
+                           case "ContractPaystoSeller":
+                               primary_id = "INV-"+parseInt(result.args.invoiceNum);
+                               additionalInfo = { recfrom:result.args.recfrom,sendTo:result.args.sendTo,value:parseInt(result.args.value) }
+                               break;
+                           default:
+                               additionalInfo = "Unknown event...";
+                       }              
+       
+                       var status = result.args.status;
+                       var data = {transactionHash:transactionHash,
+                                   blockNumber:blockNumber,
+                                   eventType:eventType,
+                                   category:category,
+                                   primary_id:primary_id,
+                                   secondary_id:secondary_id,
+                                   state:state,
+                                   status:status,
+                                   additionalInfo:additionalInfo
+                                 };
+                         EventList.push(data);
+                     });
+                  
+                  
+                  
+                     var shipEvents = ShipmentContractInstance.allEvents({fromBlock: 0, toBlock: 'latest'});
+                     shipEvents.get(function(shipError, shipLogs) {
+                     
+                     if (!shipError) {
+                             console.log("Capturing all Shipping Contract events ....");
+                             shipLogs.forEach(function(result) {
+                     
+                                 var transactionHash = result.transactionHash;
+                                 var blockNumber = result.blockNumber;
+                                 var eventType = result.event;
+                                 var category = "Shipment";
+                                 var additionalInfo = ""
+                                 var primary_id = ""
+                                 var secondary_id =""
+                                 var state = ""
+                   
+                                 switch(eventType) {
+                   
+                                     case "ShipmentRequested":
+                                         primary_id =   "PACK-"+parseInt(result.args.packageID);
+                                         secondary_id = "SHIP-"+parseInt(result.args.shipmentID);
+                                         state  = shippingStatusEnum.get(parseInt(result.args.state)).key;
+                                         break;
+                                     case "ShipmentUpdated":
+                                         primary_id = "SHIP-"+parseInt(result.args.shipmentID);
+                                         break;
+                                     case "ShipmentStatusUpdate":
+                                         primary_id = "SHIP-"+parseInt(result.args.shipmentID);
+                                         state  = shippingStatusEnum.get(parseInt(result.args.state)).key;
+                                     break;
+                   
+                                     default:
+                                         additionalInfo = "Unknown event...";
+                                 }              
+                   
+                                 var status = result.args.status;
+                                 var data = {transactionHash:transactionHash,
+                                             blockNumber:blockNumber,
+                                             eventType:eventType,
+                                             category:category,
+                                             primary_id:primary_id,
+                                             secondary_id:secondary_id,
+                                             state:state,
+                                             status:status,
+                                             additionalInfo:additionalInfo
+                                           };
+                                   EventList.push(data);
+                               });
+                               return future.return(EventList);
+                             }
+                     });                  
+                }
+           });
+         }
+    });            
+          } // End of USER ACCESS events
+  });
+    return future.wait();
+  },
+
   // This method is used to accept or decline the RFQ
   //function acceptorDeclineQuote(RFQStatus status, uint rfqID) onlyBuyer public {
   "acceptOrDeclineQuote" :function(params){
@@ -384,10 +574,10 @@ Meteor.methods({
       }
       else{
         RFQstatusUpdateEvent.watch(function(error,result){
-          if(result.blockNumber>block && result.args.isSuccess && result.args.rfqID == rfqID ){
+          if(result.blockNumber>block && result.args.status && result.args.rfqID == rfqID ){
             RFQstatusUpdateEvent.stopWatching();
-              console.log("RFQ status update :"+result.args.isSuccess);
-              future.return(result.args.isSuccess);
+              console.log("RFQ status update :"+result.args.status);
+              future.return(result.args.status);
           }
         })
       }
@@ -475,7 +665,7 @@ Meteor.methods({
         gas: const_gas
       };
 
-    var PaymentStatusEvent = POContractInstance.PaymentStatus();
+    var PaymentStatusEvent = POContractInstance.BuyerPaysToContract();
     var block = web3.eth.getBlock('latest').number;
     var future = new Future();
     
@@ -538,11 +728,11 @@ Meteor.methods({
 
         ShipmentStatusUpdateEvent.watch(function(error,result){
           console.log(result.blockNumber+">"+block)
-          console.log(result.args.isSuccess)
+          console.log(result.args.status)
           console.log(result.args.shipmentID+"="+params.shipmentID)
 
 
-          if(result.blockNumber>block && result.args.isSuccess && result.args.shipmentID == params.shipmentID ){
+          if(result.blockNumber>block && result.args.status && result.args.shipmentID == params.shipmentID ){
                   ShipmentStatusUpdateEvent.stopWatching();
 
                   console.log("Shipping Event watch Ended")
@@ -564,7 +754,7 @@ Meteor.methods({
                                   gas: const_gas
                                   };
       var block1 = web3.eth.getBlock('latest').number;
-      var PaymentStatusEvent = POContractInstance.PaymentStatus();
+      var PaymentStatusEvent = POContractInstance.ContractPaystoSeller();
 
       // Sending Transaction
       POContractInstance.releasePayment.sendTransaction(
@@ -601,6 +791,123 @@ Meteor.methods({
     return future.wait();
   },
 });
+
+/*
+function getPOEvents() {
+    // Get all Purchase Order Contract Events
+    var poEvents = POContractInstance.allEvents({fromBlock: 0, toBlock: 'latest'});
+    poEvents.get(function(poError, poLogs) {
+    
+    if (!poError) {
+            console.log("Capturing all Purchase Order Contract events ....");
+            poLogs.forEach(function(result) {
+    
+                var transactionHash = result.transactionHash;
+                var blockNumber = result.blockNumber;
+                var eventType = result.event;
+                var category = "Purchase Order";
+                var additionalInfo = ""
+                var primary_id = ""
+                var secondary_id =""
+                var state = ""
+
+                switch(eventType) {
+
+                    case "PurchaseOrderCreated":
+                        primary_id = parseInt(result.args.rfqID);
+                        secondary_id = parseInt(result.args.ponumber);
+                        additionalInfo = { rfqID:primary_id,ponumber:secondary_id }
+                        break;
+                    case "InvoiceCreated":
+                        primary_id = parseInt(result.args.ponumber);
+                        secondary_id = parseInt(result.args.invoiceNumber);
+                        additionalInfo = { ponumber:primary_id,invoiceNumber:secondary_id }
+                        break;
+                    case "PackageSlipCreated":
+                        primary_id = parseInt(result.args.ponumber);
+                        secondary_id = parseInt(result.args.packageID);
+                        additionalInfo = { ponumber:primary_id,packageID:secondary_id }
+                    break;
+                    case "BuyerPaysToContract":
+                        primary_id = parseInt(result.args.invoiceNum);
+                        additionalInfo = { recfrom:result.args.recfrom,sendTo:result.args.sendTo,value:parseInt(result.args.value) }
+                        break;
+                    case "ContractPaystoSeller":
+                        primary_id = parseInt(result.args.invoiceNum);
+                        additionalInfo = { recfrom:result.args.recfrom,sendTo:result.args.sendTo,value:parseInt(result.args.value) }
+                        break;
+                    default:
+                        additionalInfo = "Unknown event...";
+                }              
+
+                var status = result.args.status;
+                var data = {transactionHash:transactionHash,
+                            blockNumber:blockNumber,
+                            eventType:eventType,
+                            category:category,
+                            primary_id:primary_id,
+                            secondary_id:secondary_id,
+                            state:state,
+                            status:status,
+                            additionalInfo:additionalInfo
+                          };
+                  EventList.push(data);
+              });
+              getShipmentContractEvents();
+            }
+    });
+}
+
+function getRFQEvents() {
+ 
+}
+
+function getUserContractEvents() {
+  // Get all User Access Contract Events
+  var userEvents = userRepositoryContractInstance.allEvents({fromBlock: 0, toBlock: 'latest'});
+  userEvents.get(function(userError, userLogs) {
+  
+  if (!userError) {
+          console.log("Capturing all User Access Contract events ....");
+          userLogs.forEach(function(result) {
+  
+              var transactionHash = result.transactionHash;
+              var blockNumber = result.blockNumber;
+              var eventType = result.event;
+              var category = "User Access";
+              var primary_id = result.args.userName; // Username
+              var secondary_id = ""
+              var state = "";
+              var status = result.args.status;
+              if (result.args.firstName!=undefined)
+                var additionalInfo ={firstName:result.args.firstName,lastName:result.args.lastName};
+              else
+                var additionalInfo ={};
+              var data = {transactionHash:transactionHash,
+                          blockNumber:blockNumber,
+                          eventType:eventType,
+                          category:category,
+                          primary_id:primary_id,
+                          secondary_id:secondary_id,
+                          state:state,
+                          status:status,
+                          additionalInfo:additionalInfo
+                        };
+                EventList.push(data);
+            });
+             return EventList;
+        //        getRFQEvents();
+
+          }
+  });
+}
+
+function getShipmentContractEvents() {
+  // Get all Purchase Order Contract Events
+
+}
+
+*/
 
 function getJSONObject (name,filehash)
 {

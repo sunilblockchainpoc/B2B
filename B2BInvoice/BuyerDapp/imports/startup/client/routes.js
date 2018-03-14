@@ -15,6 +15,7 @@ import '../../ui/pages/views/PurchaseOrder_details.js';
 import '../../ui/pages/views/Invoice_Details_view.js';
 import '../../ui/pages/views/login.js';
 import '../../ui/pages/views/Shipment_Details_view.js';
+import '../../ui/pages/views/Events_view.js';
 
 // Set up all routes in the app
 
@@ -24,6 +25,16 @@ FlowRouter.route('/admin', {
   }],
   action() {
     BlazeLayout.render('App_body', { top:'header', main: 'Admin_view', footer:'footer' });
+  },
+});
+
+
+FlowRouter.route('/events', {
+  name: 'App.events',
+  triggersEnter: [function(context, redirect) {
+  }],
+  action() {
+    BlazeLayout.render('App_body', { top:'header', main: 'Events_view', footer:'footer' });
   },
 });
 
@@ -78,6 +89,19 @@ FlowRouter.route('/PurchaseOrder/Create', {
   }],
   action() {
     BlazeLayout.render('App_body', { top:'header', main: 'PurchaseOrder_Create', footer:'footer' });
+  },
+});
+
+FlowRouter.route('/blockData/:blockNumber', {
+  name: 'App.block.details',
+  triggersEnter: [function(context, redirect) {
+  //window.open("http://localhost:8000/#/block/284")
+      //redirect('/login');
+  }],
+  action:function(params,queryParams) {
+    window.open("http://localhost:8000/#/block/"+params.blockNumber)
+    //console.log(params)
+    BlazeLayout.render('App_body', { top:'header', main: 'Events_view', footer:'footer' });
   },
 });
 

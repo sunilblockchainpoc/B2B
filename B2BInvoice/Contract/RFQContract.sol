@@ -52,10 +52,10 @@ contract RFQContract {
 
 
     // Event Handling
-    event RFQRequested(uint rfqID,string requestBy,bool status);
-    event RFQResponded(uint rfqID, bool status);
+    event RFQRequested(uint rfqID,string requestBy,RFQStatus state,bool status);
+    event RFQResponded(uint rfqID,RFQStatus state,bool status);
+    event RFQstatusUpdate(uint rfqID,RFQStatus state,bool status);
     event ErrorMessage(uint errno,string errMessage);
-    event RFQstatusUpdate(uint rfqID,RFQStatus status,bool isSuccess);
 
     /* Buyer uses this method and initiates RFQ */
     function requestRFQ(string requestBy, uint requestDt, string reqProductFileHash ) onlyBuyer public {
@@ -68,7 +68,7 @@ contract RFQContract {
             ProductSelectionDetails[RFQCount] = ProductSelection(RFQCount + 1, reqProductFileHash,emptyString);
 
             // Make sure there is no same RFQ is defined again
-            RFQRequested(RFQCount+1, requestBy,true);
+            RFQRequested(RFQCount+1, requestBy,RFQStatus.Requested,true);
             RFQCount++;
     }
 
@@ -125,10 +125,9 @@ contract RFQContract {
             if (ProductSelectionDetails[rfqIndex].rfqID == rfqId) {
                 ProductSelectionDetails[rfqIndex].resProductFileHash = resProductFileHash;
             }
-            
-            RFQResponded(RFQs[rfqIndex].rfqID,true);
+            RFQResponded(RFQs[rfqIndex].rfqID,RFQStatus.Responded,true);
         } else {
-            RFQResponded(RFQs[rfqIndex].rfqID,false);
+            RFQResponded(RFQs[rfqIndex].rfqID,RFQStatus.Responded,false);
             revert();
         }
     }

@@ -38,12 +38,14 @@ contract UserRepository {
     uint32 MaxUserProfileId;
     uint32 MaxUserGroupId;
 
-    event UserAdded(string firstName, string lastName, bool success);
+    event UserAdded(string firstName, string lastName,string userName,bool status);
+    event PasswordChanged(string userName,bool status);
+    
     event UserAddedToGroup(bool success);
     event UserUpdated(string fName, string lName, bool success);
     event ErrorMessage(string errorMessage);
     event UserGroupUpdated(bool success);
-    event PasswordChanged(bool success);
+
 
     function UserRepository(address _rolesRepoAddress) {
         rolesRepositoryAddress = _rolesRepoAddress;
@@ -57,7 +59,7 @@ contract UserRepository {
         require(bytes(password).length>0);
         users[MaxUserProfileId] = UserProfile(MaxUserProfileId + 1,userName, fName, lName,password, orgName, userStatus, activeDate, 0, nodeAddress);
         MaxUserProfileId++;
-        UserAdded(fName, lName, true);
+        UserAdded(fName, lName, userName,true);
     }
     
     function login(string _username,string _password) public constant returns (address node, uint32[100] groupIds, uint32[100] roleIds) {
@@ -77,11 +79,11 @@ contract UserRepository {
         for (uint32 i = 0; i<MaxUserProfileId; i++) {
             if ((stringsEqual(users[i].UserName, _username)) && (stringsEqual(users[i].password, _oldpassword))) {
                 users[i].password = _password;
-                PasswordChanged(true);
+                PasswordChanged(_username,true);
                 return;
             }
         }
-        PasswordChanged(false);
+        PasswordChanged(_username,false);
    }
     
     function stringsEqual(string storage _a, string memory _b) internal returns (bool) {

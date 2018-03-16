@@ -10,7 +10,6 @@ B2BInvoice/BuyerDapp/imports/startup/server/Contract/ShipmentContract.json
 B2BInvoice/BuyerDapp/imports/startup/server/Contract/UserRepository.abi
 B2BInvoice/BuyerDapp/imports/startup/server/Contract/UserRepository.bin
 B2BInvoice/BuyerDapp/imports/startup/server/Contract/UserRepository.json
-B2BInvoice/BuyerDapp/settings.json
 B2BInvoice/SellerDapp/imports/startup/server/Contract/POContract.abi
 B2BInvoice/SellerDapp/imports/startup/server/Contract/POContract.bin
 B2BInvoice/SellerDapp/imports/startup/server/Contract/POContract.json
@@ -23,7 +22,6 @@ B2BInvoice/SellerDapp/imports/startup/server/Contract/ShipmentContract.json
 B2BInvoice/SellerDapp/imports/startup/server/Contract/UserRepository.abi
 B2BInvoice/SellerDapp/imports/startup/server/Contract/UserRepository.bin
 B2BInvoice/SellerDapp/imports/startup/server/Contract/UserRepository.json
-B2BInvoice/SellerDapp/settings.json
 B2BInvoice/ShipmentDapp/imports/startup/server/Contract/POContract.abi
 B2BInvoice/ShipmentDapp/imports/startup/server/Contract/POContract.bin
 B2BInvoice/ShipmentDapp/imports/startup/server/Contract/POContract.json
@@ -36,7 +34,6 @@ B2BInvoice/ShipmentDapp/imports/startup/server/Contract/ShipmentContract.json
 B2BInvoice/ShipmentDapp/imports/startup/server/Contract/UserRepository.abi
 B2BInvoice/ShipmentDapp/imports/startup/server/Contract/UserRepository.bin
 B2BInvoice/ShipmentDapp/imports/startup/server/Contract/UserRepository.json
-B2BInvoice/ShipmentDapp/settings.json
 B2BInvoice/api/downloads/
 B2BInvoice/api/logs/debug.log
 B2BInvoice/bin/Contract/POContract.abi

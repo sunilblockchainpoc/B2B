@@ -783,7 +783,6 @@ Meteor.methods({
                  
     /************************* Release Payment to Shipper - END **************************** */
                  
-                  future.return(result.args.isSuccess);
               }
             })
       }
